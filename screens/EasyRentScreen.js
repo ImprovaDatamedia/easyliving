@@ -13,7 +13,7 @@ import {
   Button,
 } from 'react-native';
 import Modal from "react-native-modal";
-import EasyRentKategoriModal from "./EasyRentKategoriModal.js"
+import EasyRentKategoriList from "./EasyLivingComp.js"
 
 
 export default class EasyRentScreen extends React.Component {
@@ -144,7 +144,7 @@ handler() {
           isVisible={this.state.isKategoriModalVisible}
           onBackdropPress={() => this.setState({isKategoriModalVisible: false })}>
           <View style={{height:400, Width:300, borderRadius:5, backgroundColor:'white'}}> 
-            <EasyRentKategoriModal onSelectOne={this.selectKategori}/>
+            <EasyRentKategoriList onSelectOne={this.selectKategori}/>
           </View>
         </Modal>
         <View style={{alignItems:'center', marginTop:3, marginBottom:3, marginLeft:7, marginRight:7, paddingTop:5, paddingBottom:5, backgroundColor:'white'}}>

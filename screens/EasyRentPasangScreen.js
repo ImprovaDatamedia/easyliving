@@ -15,7 +15,7 @@ import {
 import { TextField } from 'react-native-material-textfield';
 import { Dropdown } from 'react-native-material-dropdown';
 import Modal from "react-native-modal";
-import EasyRentKategoriModal from "./EasyRentKategoriModal.js"
+import EasyRentKategoriList from "./EasyLivingComp.js"
 
 
 export default class EasyRentPasangScreen extends React.Component {
@@ -109,7 +109,6 @@ export default class EasyRentPasangScreen extends React.Component {
   showKatagoriList(){
     return(
       <View style={{height:300, width:200, alignItems:'center', borderRadius:5, backgroundColor:'white'}}>
-      {EasyRentKategoriModal.showModal}
         <Text>I am the modal content!</Text>
         <Button
             onPress={this.toggleKategoriModalVisible}
@@ -171,7 +170,7 @@ export default class EasyRentPasangScreen extends React.Component {
               isVisible={this.state.isKategoriModalVisible}
               onBackdropPress={() => this.setState({isKategoriModalVisible: false })}>
               <View style={{height:400, Width:300, borderRadius:5, backgroundColor:'white'}}> 
-                <EasyRentKategoriModal onSelectOne={this.selectKategori}/>
+                <EasyRentKategoriList onSelectOne={this.selectKategori}/>
               </View>
             </Modal>
             <TouchableOpacity onPress={this.toggleKategoriModalVisible}>

@@ -11,7 +11,7 @@ import {
   View,
 } from 'react-native';
 
-class EasyRentKategoriModal extends React.Component {
+class EasyRentKategoriList extends React.Component {
 
   constructor(props) {
     super(props)
@@ -20,7 +20,6 @@ class EasyRentKategoriModal extends React.Component {
       kategoriID:0,
     };
   }
-
 
   gettbKategori = () => {
     var table=[];
@@ -36,16 +35,11 @@ class EasyRentKategoriModal extends React.Component {
       })
     }).then((response) => {return response.json()
     }).then((responseJson) => {
-//      alert('test a');
       for(i=0;i<responseJson.length;i++){
           var val= this.drawRow(responseJson[i]);
-//          alert('test b');
           table.push(val);
         }
-//          alert('test c'+JSON.stringify(table));
-        // alert('table: '+JSON.stringify(table));
         this.setState({rowData:table});
-//        alert('rowData: '+JSON.stringify(this.state.rowData));
       }
     ).catch((error) => {
       console.error(error);
@@ -98,26 +92,11 @@ class EasyRentKategoriModal extends React.Component {
   }
 }
 
-export default EasyRentKategoriModal;
+export default EasyRentKategoriList;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-  },
-  welcomeContainer: {
-    alignItems: 'center',
-    marginTop: 10,
-    marginBottom: 20,
-  },
-  contentContainer: {
-    paddingTop: 30,
-  },
-  welcomeImage: {
-    width: 100,
-    height: 80,
-    resizeMode: 'contain',
-    marginTop: 3,
-    marginLeft: -10,
   },
 });  
