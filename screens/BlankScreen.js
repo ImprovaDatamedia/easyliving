@@ -10,7 +10,7 @@ import {
   View,
 } from 'react-native';
 
-export default class BlankScreen extends React.Component {
+export default class BlankScreen1 extends React.Component {
   static navigationOptions = {
     title: 'Blank Screen',
   };
