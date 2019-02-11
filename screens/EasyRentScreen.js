@@ -6,14 +6,14 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  TouchableHighlight,
   TouchableOpacity,
   View,
   Dimensions,
   Button,
 } from 'react-native';
 import Modal from "react-native-modal";
-import EasyRentKategoriList from "./EasyLivingComp.js"
+//import EasyRentKategoriScreen from "./EasyRentKategoriScreen.js"
+import {HideableView} from "./EasyLivingComp.js"
 
 
 export default class EasyRentScreen extends React.Component {
@@ -23,7 +23,6 @@ export default class EasyRentScreen extends React.Component {
     super(props);
     this.handler = this.handler.bind(this);
     this.state={
-      isKategoriModalVisible : false,
       kategoriID : 0,
       kategoriNama : '',
       rowData:[],
@@ -37,8 +36,8 @@ handler() {
   }
   
   showEasyRentKategoriScreen=()=>{
-    this.setState({isKategoriModalVisible:!this.state.isKategoriModalVisible})
-//    this.props.navigation.navigate("EasyRentKategori", {callerScreen:"EasyRent"});
+//    this.setState({isKategoriModalVisible:!this.state.isKategoriModalVisible})
+    this.props.navigation.navigate("EasyRentKategori", {callerScreen:"EasyRent"});
   }   
 
   showEasyRentPasangScreen=()=>{
@@ -115,6 +114,7 @@ handler() {
     this._isMounted = true;
       this.gettbRent();
   }
+
   componentDidUpdate(prevState){
     this._isMounted = true;
       if(prevState.rowData !== this.state.rowData){
@@ -124,9 +124,6 @@ handler() {
   componentWillUnmount(){
     this._isMounted = false;
   }
-
-  toggleKategoriModalVisible = () =>
-    this.setState({ isKategoriModalVisible: !this.state.isKategoriModalVisible});
 
   selectKategori=(kategoriID, kategoriNama)=>{
     this.setState({kategoriID:kategoriID});
@@ -139,22 +136,14 @@ handler() {
     let lebar =  Dimensions.get('window').width; 
     return (
       <View style={{flex:1,  backgroundColor: 'white'}}>
-          <Modal 
-          backdropColor='gray' 
-          isVisible={this.state.isKategoriModalVisible}
-          onBackdropPress={() => this.setState({isKategoriModalVisible: false })}>
-          <View style={{height:400, Width:300, borderRadius:5, backgroundColor:'white'}}> 
-            <EasyRentKategoriList onSelectOne={this.selectKategori}/>
-          </View>
-        </Modal>
         <View style={{alignItems:'center', marginTop:3, marginBottom:3, marginLeft:7, marginRight:7, paddingTop:5, paddingBottom:5, backgroundColor:'white'}}>
           <Image style={{borderRadius:5, width:lebar-10, height: lebar*(1/3), resizeMode: 'stretch'}} 
           source={{uri:'https://www.easyliving.id/images/rent/bukalapak.jpg'}}/>
         </View>
-        <View style={{justifyContent: 'space-around', flexDirection:"row", height:50, alignItems:'center',  backgroundColor:'white'}}>
-          <TouchableHighlight onPress={this.showEasyRentKategoriScreen}>
+        <HideableView style={{justifyContent: 'space-around', flexDirection:"row", height:50, alignItems:'center',  backgroundColor:'white'}}>
+          <TouchableOpacity onPress={this.showEasyRentKategoriScreen}>
             <Image source={require('../assets/images/EasyRent/iconKategori.png')} style={{width:40, height:40}}/>
-          </TouchableHighlight>
+          </TouchableOpacity>
           <TouchableOpacity onPress={null}>
             <Image source={require('../assets/images/EasyRent/iconCari.png')} style={{width:40, height:40}}/>
           </TouchableOpacity>
@@ -164,7 +153,7 @@ handler() {
           <TouchableOpacity onPress={this.showEasyRentPasangScreen}>
             <Image source={require('../assets/images/EasyRent/iconPasangIklan.png')} style={{width:40, height:40}}/>
           </TouchableOpacity>
-        </View>
+        </HideableView>
         <ScrollView style={{paddingTop:7, paddingLeft:5, paddingRight:5, backgroundColor:'#f2f2f2'}}>   
           {this.state.rowData}
         </ScrollView>

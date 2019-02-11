@@ -10,6 +10,20 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import PropTypes from 'prop-types';
+
+export const HideableView = (props) => {
+  const { children, hide, style } = props;
+  if (hide) {
+    return null;
+  }
+  return (
+    <View style={style}>
+      { children }
+    </View>
+  );
+};
+
 
 class EasyRentKategoriList extends React.Component {
 
@@ -78,10 +92,10 @@ class EasyRentKategoriList extends React.Component {
   render() {
     return (
       <View style={{borderRadius:5}}>
-        <View style={{height:40, alignItems:'center', justifyContent:'center', borderRadius:3, backgroundColor:'#cd695a'}}>
+        <HideableView hide={true} style={{height:40, alignItems:'center', justifyContent:'center', borderRadius:3, backgroundColor:'#cd695a'}}>
           <Text  style={{color:'#e8e8e8', fontSize:20, fontWeight:'bold', backgroundColor: 'transparent'}}>
           Pilih Kategori Barang</Text>
-        </View>
+        </HideableView>
         <View style={{height:3, backgroundColor:'#f2f2f2'}}>
         </View> 
         <ScrollView style={{paddingTop:2, paddingLeft:3, paddingRight:3, borderRadius:5, backgroundColor:'#f2f2f2'}}>   
@@ -93,6 +107,7 @@ class EasyRentKategoriList extends React.Component {
 }
 
 export default EasyRentKategoriList;
+
 
 const styles = StyleSheet.create({
   container: {

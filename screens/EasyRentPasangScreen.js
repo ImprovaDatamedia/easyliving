@@ -169,8 +169,12 @@ export default class EasyRentPasangScreen extends React.Component {
               backdropColor='gray' 
               isVisible={this.state.isKategoriModalVisible}
               onBackdropPress={() => this.setState({isKategoriModalVisible: false })}>
-              <View style={{height:400, Width:300, borderRadius:5, backgroundColor:'white'}}> 
-                <EasyRentKategoriList onSelectOne={this.selectKategori}/>
+              <View style={{height:400, borderRadius:5, backgroundColor:'white'}}> 
+                <View style={{height:40, alignItems:'center', justifyContent:'center', borderRadius:3, backgroundColor:'#cd695a'}}>
+                  <Text  style={{color:'#e8e8e8', fontSize:20, fontWeight:'bold', backgroundColor: 'transparent'}}>
+                    Pilih Kategori Barang </Text>
+                </View>
+                <EasyRentKategoriList hideHeader={false} onSelectOne={this.selectKategori}/>
               </View>
             </Modal>
             <TouchableOpacity onPress={this.toggleKategoriModalVisible}>
