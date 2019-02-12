@@ -10,6 +10,7 @@ import {
   View,
   Alert,
   Dimensions,
+  AsyncStorage,
 } from 'react-native';
 import Colors from '../constants/Colors';
 import { createStackNavigator, createSwitchNavigator, NavigationActions, StackActions } from 'react-navigation';
@@ -25,27 +26,20 @@ static navigationOptions = {
         this.props.navigation.navigate('SignUp')
       }
     resetStack = ()=> {
-        return this.props
-                   .navigation
-                   .dispatch(StackActions.reset(
-                     {
-                        index: 0,
-                        actions: [
-                          NavigationActions.navigate({ routeName: 'MainScreen'})
-                        ]
-                      }));
+      AsyncStorage.setItem('userToken','abc' );
+      this.props.navigation.navigate('App');
       }
- 
+
 
     render() {
-    // let lebar = 1.0*Dimensions.get('window').width;  
+    // let lebar = 1.0*Dimensions.get('window').width;
     return (
         <View style={{flex: 1, backgroundColor: 'white'}}>
             <View style={{height:300, justifyContent: 'center', alignItems: 'center'}}>
                 <Image style={{top : 20, width:250*508/634, height: 250, resizeMode: 'contain'}} source={require('../assets/images/WelcomeEasyLiving.png')}/>
             </View>
             <TextField
-                    label = 'Username'    
+                    label = 'Username'
            />
            <TextField
                     label = 'Password'
@@ -76,7 +70,7 @@ const styles = StyleSheet.create({
       flex : 1,
       flexDirection : 'column',
       justifyContent: 'space-between',
-  },  
+  },
 container: {
    flex: 1,
     width: 200,
@@ -95,4 +89,4 @@ container: {
     backgroundColor: '#3ff',
     justifyContent: 'center',
   },
-});  
+});

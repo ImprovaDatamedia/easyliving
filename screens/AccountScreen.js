@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, Alert, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
+import { Text, AsyncStorage, Alert, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
 import { ExpoLinksView } from '@expo/samples';
 import { createStackNavigator, createSwitchNavigator, NavigationActions, StackActions } from 'react-navigation';
 // import LogOut from '../screens/LoginScreen';
@@ -25,14 +25,14 @@ import { createStackNavigator, createSwitchNavigator, NavigationActions, StackAc
 
 
 
-  LogOut = () => {
-//    this.props.navigation.navigate('LogOut')
-    // Alert.alert('Bisa')
-  }
+    _signOutAsync = async () => {
+      await AsyncStorage.clear();
+      this.props.navigation.navigate('Auth');
+    };
   render() {
     return (
       <ScrollView style={styles.container}>
-           <TouchableOpacity onPress={this.resetStack} style={{backgroundColor : '#00BCD4', padding: 10, borderRadius : 10, textAlign : 'center'}}>
+           <TouchableOpacity onPress={this._signOutAsync} style={{backgroundColor : '#00BCD4', padding: 10, borderRadius : 10, textAlign : 'center'}}>
              <Text style={{textAlign: 'center', padding : 10,}}>Log Out</Text>
            </TouchableOpacity>
       </ScrollView>
