@@ -174,7 +174,7 @@ export default class EasyRentPasangScreen extends React.Component {
                   <Text  style={{color:'#e8e8e8', fontSize:20, fontWeight:'bold', backgroundColor: 'transparent'}}>
                     Pilih Kategori Barang </Text>
                 </View>
-                <EasyRentKategoriList hideHeader={false} onSelectOne={this.selectKategori}/>
+                <EasyRentKategoriList onSelectOne={this.selectKategori}/>
               </View>
             </Modal>
             <TouchableOpacity onPress={this.toggleKategoriModalVisible}>

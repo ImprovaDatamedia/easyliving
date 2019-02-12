@@ -142,7 +142,7 @@ handler() {
           source={{uri:'https://www.easyliving.id/images/rent/bukalapak.jpg'}}/>
         </View>
         <View hide={this.state.hideCari} style={{flexDirection:"row", height:80, alignItems:'center',  backgroundColor:'white'}}>
-          <TextInput style={{textAlligned:'top', width:340, height:40}} mode='outlined' label='lcari' value='hallo'/>
+          <TextInput style={{textAlligned:'top', width:340, height:40}} mode='outlined' label='Cari' value='Bor listrik serbaguna'/>
         </View>
         <HideableView style={{justifyContent: 'space-around', flexDirection:"row", height:50, alignItems:'center',  backgroundColor:'white'}}>
           <TouchableOpacity onPress={this.showEasyRentKategoriScreen}>

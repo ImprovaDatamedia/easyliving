@@ -92,9 +92,9 @@ class EasyRentKategoriList extends React.Component {
   render() {
     return (
       <View style={{borderRadius:5}}>
-        <HideableView hide={true} style={{height:40, alignItems:'center', justifyContent:'center', borderRadius:3, backgroundColor:'#cd695a'}}>
+        <HideableView hide={this.props.hideHeader} style={{height:40, alignItems:'center', justifyContent:'center', borderRadius:3, backgroundColor:'#cd695a'}}>
           <Text  style={{color:'#e8e8e8', fontSize:20, fontWeight:'bold', backgroundColor: 'transparent'}}>
-          Pilih Kategori Barang</Text>
+          Pilih Kategori Barang </Text>
         </HideableView>
         <View style={{height:3, backgroundColor:'#f2f2f2'}}>
         </View> 
