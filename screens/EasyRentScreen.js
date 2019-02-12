@@ -14,7 +14,7 @@ import {
 import Modal from "react-native-modal";
 //import EasyRentKategoriScreen from "./EasyRentKategoriScreen.js"
 import {HideableView} from "./EasyLivingComp.js"
-
+import { TextInput } from 'react-native-paper';
 
 export default class EasyRentScreen extends React.Component {
   
@@ -26,6 +26,7 @@ export default class EasyRentScreen extends React.Component {
       kategoriID : 0,
       kategoriNama : '',
       rowData:[],
+      hideCari:true,
     }
   }
 
@@ -140,11 +141,14 @@ handler() {
           <Image style={{borderRadius:5, width:lebar-10, height: lebar*(1/3), resizeMode: 'stretch'}} 
           source={{uri:'https://www.easyliving.id/images/rent/bukalapak.jpg'}}/>
         </View>
+        <View hide={this.state.hideCari} style={{flexDirection:"row", height:80, alignItems:'center',  backgroundColor:'white'}}>
+          <TextInput style={{textAlligned:'top', width:340, height:40}} mode='outlined' label='lcari' value='hallo'/>
+        </View>
         <HideableView style={{justifyContent: 'space-around', flexDirection:"row", height:50, alignItems:'center',  backgroundColor:'white'}}>
           <TouchableOpacity onPress={this.showEasyRentKategoriScreen}>
             <Image source={require('../assets/images/EasyRent/iconKategori.png')} style={{width:40, height:40}}/>
           </TouchableOpacity>
-          <TouchableOpacity onPress={null}>
+          <TouchableOpacity onPress={()=> this.setState({hideCari: !this.state.hideCari})}>
             <Image source={require('../assets/images/EasyRent/iconCari.png')} style={{width:40, height:40}}/>
           </TouchableOpacity>
           <TouchableOpacity onPress={null}>
