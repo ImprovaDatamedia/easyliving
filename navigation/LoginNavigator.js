@@ -1,6 +1,6 @@
 import React from 'react';
 import { Platform } from 'react-native';
-import { createStackNavigator, createBottomTabNavigator, createSwitchNavigator } from 'react-navigation';
+import { createAppContainer, createStackNavigator, createBottomTabNavigator, createSwitchNavigator } from 'react-navigation';
 
 import WelcomeScreen from '../screens/WelcomeScreen';
 import Login from '../screens/LoginScreen';

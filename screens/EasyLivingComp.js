@@ -11,18 +11,9 @@ import {
   View,
 } from 'react-native';
 import PropTypes from 'prop-types';
+import ListViewTable from "../components/ListViewTable.js"
+import HideableView from "../components/HideableView.js"
 
-export const HideableView = (props) => {
-  const { children, hide, style } = props;
-  if (hide) {
-    return null;
-  }
-  return (
-    <View style={style}>
-      { children }
-    </View>
-  );
-};
 
 
 class EasyRentKategoriList extends React.Component {
@@ -35,30 +26,6 @@ class EasyRentKategoriList extends React.Component {
     };
   }
 
-  gettbKategori = () => {
-    var table=[];
-    return fetch('http://mwn.improva.id:8084/gpsloc/reactnative/API.php', {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        token : 'SELECT',
-        query : 'SELECT * from tbeasyrentkategori'
-      })
-    }).then((response) => {return response.json()
-    }).then((responseJson) => {
-      for(i=0;i<responseJson.length;i++){
-          var val= this.drawRow(responseJson[i]);
-          table.push(val);
-        }
-        this.setState({rowData:table});
-      }
-    ).catch((error) => {
-      console.error(error);
-    });
-  }
 
   pressKategori=(kategoriID, kategoriNama)=>{
     this.setState({kategoriID:kategoriID});
@@ -85,9 +52,6 @@ class EasyRentKategoriList extends React.Component {
     )
   }
 
-  componentDidMount(){
-    this.gettbKategori();
-  }
 
   render() {
     return (
@@ -99,7 +63,10 @@ class EasyRentKategoriList extends React.Component {
         <View style={{height:3, backgroundColor:'#f2f2f2'}}>
         </View> 
         <ScrollView style={{paddingTop:2, paddingLeft:3, paddingRight:3, borderRadius:5, backgroundColor:'#f2f2f2'}}>   
-          {this.state.rowData}
+        <ListViewTable
+          Query = 'SELECT * from tbeasyrentkategori'
+          onRenderRow = {this.drawRow}
+        />
         </ScrollView>
       </View>
     );

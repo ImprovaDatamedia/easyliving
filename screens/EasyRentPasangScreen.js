@@ -11,6 +11,7 @@ import {
   Dimensions,
   Button,
   Picker,
+  TextInput,
 } from 'react-native';
 import { TextField } from 'react-native-material-textfield';
 import { Dropdown } from 'react-native-material-dropdown';
@@ -39,25 +40,20 @@ export default class EasyRentPasangScreen extends React.Component {
     };
   };
 
-
-
   constructor(props) {
     super(props);
     this.state={
-      rowData:[],
       isKategoriModalVisible : false,
       kategoriID : 0,
       kategoriNama : '',
     }     
   }
 
-
-
   showEasyRentKategoriScreen=()=>{
     this.props.navigation.navigate("EasyRentKategori", {callerScreen:"EasyRentPasang"});
   }   
 
-  gettbRent = (from, count) => {
+/*  gettbRent = (from, count) => {
     var table=[];
     return fetch('http://mwn.improva.id:8084/gpsloc/reactnative/API.php', {
       method: 'POST',
@@ -82,7 +78,7 @@ export default class EasyRentPasangScreen extends React.Component {
       console.error(error);
     });
   }
-
+*/
 
 
   drawRow = (dataJson) => {
@@ -117,10 +113,6 @@ export default class EasyRentPasangScreen extends React.Component {
           />
       </View>
     )
-  }
-
-  componentDidMount(){
-    this.gettbRent();
   }
 
   toggleKategoriModalVisible = () =>
@@ -161,8 +153,11 @@ export default class EasyRentPasangScreen extends React.Component {
       <View style={{flex:1,  backgroundColor: 'white'}}>
         <ScrollView style={{flex:1, paddingTop:5, paddingLeft:0, paddingRight:0, backgroundColor:'white'}}>   
           <View style={{flex:1,paddingLeft:20, paddingRight:20, backgroundColor:'white'}}>
-            <TextField
-              label = 'Nama Barang'    
+          <TextInput style={{marginLeft: 10, marginRight:10, marginTop:0, borderRadius:5, height: 40, width:lebar-80,  paddingLeft:5, borderColor: '#b2b2b2', borderWidth: 1, backgroundColor:'#FFFCF4'}}
+              underlineColorAndroid = "transparent"
+              autoCapitalize = "none"
+              onChangeText = {this.cariChangeText}
+              onSubmitEditing = {this.cariBarang}
             />
             <Modal 
               style={{margin:10, borderRadius:5}} 

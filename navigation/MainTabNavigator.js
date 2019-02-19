@@ -1,6 +1,6 @@
 import React from 'react';
+import {createAppContainer, createStackNavigator, createBottomTabNavigator } from 'react-navigation';
 import { Platform } from 'react-native';
-import { createStackNavigator, createBottomTabNavigator } from 'react-navigation';
 
 import TabBarIcon from '../components/TabBarIcon';
 import HomeScreen from '../screens/HomeScreen';
