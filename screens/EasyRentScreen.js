@@ -138,6 +138,7 @@ handler() {
           <View style={{height:55, flexDirection:"row", alignItems:'center', backgroundColor:'white'}}>
             <TextInput style={{marginLeft: 10, marginRight:10, marginTop:0, borderRadius:5, height: 40, width:lebar-80,  paddingLeft:5, borderColor: '#b2b2b2', borderWidth: 1, backgroundColor:'#FFFCF4'}}
               underlineColorAndroid = "transparent"
+              autoCapitalize = "none"
               onChangeText = {this.cariChangeText}
               onSubmitEditing = {this.cariBarang}
             />
