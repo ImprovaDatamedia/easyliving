@@ -1,6 +1,7 @@
 import React from 'react';
 import {createAppContainer, createStackNavigator, createBottomTabNavigator } from 'react-navigation';
 import { Platform } from 'react-native';
+import { Avatar, Badge, Icon, withBadge } from 'react-native-elements'
 
 import TabBarIcon from '../components/TabBarIcon';
 import HomeScreen from '../screens/HomeScreen';
@@ -23,6 +24,14 @@ import EasyServiceScreen from '../screens/EasyServiceScreen';
 import EasyRentScreen from '../screens/EasyRentScreen';
 import EasyRentKategoriScreen from '../screens/EasyRentKategoriScreen';
 import EasyRentPasangScreen from '../screens/EasyRentPasangScreen';
+import EasyRentPasangConfirmScreen from '../screens/EasyRentPasangConfirmScreen';
+import EasyPhoneKategoriScreen from '../screens/EasyPhoneKategoriScreen';
+import EasyPhoneNumberScreen from '../screens/EasyPhoneNumberScreen';
+import EasyPhoneDetailScreen from '../screens/EasyPhoneDetailScreen';
+import EasyRentDetailScreen from '../screens/EasyRentDetailScreen';
+import EasyAdminLocScreen from '../screens/EasyAdminLoc';
+import EasyPhoneAddScreen from '../screens/EasyPhoneAddScreen';
+import EasyWebBrowserScreen from '../screens/EasyWebBrowserScreen';
 
 
 
@@ -43,7 +52,16 @@ const HomeStack = createStackNavigator({
   EasyRent: EasyRentScreen,
   EasyRentKategori: EasyRentKategoriScreen,
   EasyRentPasang: EasyRentPasangScreen,
+  EasyRentPasangConfirm : EasyRentPasangConfirmScreen,
+  EasyPhoneKategori : EasyPhoneKategoriScreen,
+  EasyPhoneNumber : EasyPhoneNumberScreen,
+  EasyPhoneDetail : EasyPhoneDetailScreen,
+  EasyRentDetail : EasyRentDetailScreen,
+  EasyAdminLoc : EasyAdminLocScreen,
+  EasyPhoneAdd : EasyPhoneAddScreen,
+  EasyWebBrowser : EasyWebBrowserScreen,
 });
+
 
 
 HomeStack.navigationOptions = {
@@ -76,13 +94,15 @@ const InboxStack = createStackNavigator({
   Inbox: InboxScreen,
 });
 
+const BadgedIcon = withBadge(0, { status: "success", left: 25 })(Icon)
+
 InboxStack.navigationOptions = {
   tabBarLabel: 'Inbox',
   tabBarIcon: ({ focused }) => (
-    <TabBarIcon
-      focused={focused}
-      name={Platform.OS === 'ios' ? 'ios-mail' : 'md-mail'}
-    />
+    <BadgedIcon 
+      type="ionicon" 
+      color={focused==true? "#5c93d8":"#cbcbcb"} 
+      name={Platform.OS === 'ios' ? 'ios-mail' : 'md-mail'} />
   ),
 };
 

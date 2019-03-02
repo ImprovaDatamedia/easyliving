@@ -16,15 +16,22 @@ import {
 import Modal from "react-native-modal";
 //import EasyRentKategoriScreen from "./EasyRentKategoriScreen.js"
 import ListViewTable from "../components/ListViewTable.js"
-import HideableView from "../components/HideableView.js"
+import {HideableView} from "../components/HideableView.js"
 //import { TextInput } from 'react-native-paper';
 import {Kohana} from 'react-native-textinput-effects';
 import MaterialsIcon from 'react-native-vector-icons/MaterialIcons';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import Moment from 'react-moment';
 
 export default class EasyRentScreen extends React.Component {
   
   cariText ='cari...';
+
+  static navigationOptions = ({ navigation }) => {
+    return{
+      title: "Easy Rent"
+    };
+  };
 
   constructor(props) {
     super(props);
@@ -60,18 +67,26 @@ handler() {
         this.props.navigation.navigate("EasyRentKategori", {callerScreen:"EasyRent"});
       }   
     
-
-
-  showEasyRentPasangScreen=()=>{
+  showKetentuan=()=>{
+    var moment = require('moment');
+    var Tanggal = moment(new Date()).format("YYYY-MM-DD HH:mm:ss");
+    alert(Tanggal);
     this.props.navigation.navigate("EasyRentPasang");
+  }   
+    
+    
+
+  showRentDetailScreen=(dataJson)=>{
+    this.props.navigation.navigate("EasyRentDetail", {Data:dataJson});
   }   
 
 
   drawRow = (dataJson) => {
-    console.log(dataJson.NamaBarang);
-    if(dataJson.MinWaktu>1){minWaktuSewa=', min:'+dataJson.MinWaktu+' '+dataJson.Waktu} else {minWaktuSewa=''};
-    if(dataJson.MaxWaktu!=0){maxWaktuSewa=', max:'+dataJson.MaxWaktu+' '+dataJson.Waktu} else {maxWaktuSewa=''};
+//    console.log(dataJson.NamaBarang);
+    if(dataJson.MinWaktu>1){minWaktuSewa=', min: '+dataJson.MinWaktu+' '+dataJson.Waktu} else {minWaktuSewa=''};
+    if(dataJson.MaxWaktu!=0){maxWaktuSewa=', max: '+dataJson.MaxWaktu+' '+dataJson.Waktu} else {maxWaktuSewa=''};
     return(
+      <TouchableOpacity onPress={()=>this.showRentDetailScreen(dataJson)}>
       <View key={dataJson.ID} style={{flex:1, flexDirection:"row", alignItems:'flex-start', marginBottom:8, marginLeft:7, marginRight:7, borderRadius:5, backgroundColor:'white'}}>
         <Image source={{uri: 'https://www.klikteknik.com/wp-content/uploads/'+dataJson.Gambar}} style={{marginTop:10, marginLeft:10, width:80, height:80, resizeMode: 'stretch'}}/>
         <View style={{flex:1, alignItems:'flex-start', paddingTop:10, paddingBottom:10, marginLeft:10, marginRight:7, borderRadius:5, backgroundColor:'white'}}>
@@ -86,6 +101,7 @@ handler() {
           </Text>
         </View>
       </View>   
+      </TouchableOpacity>
     )
   }
 
@@ -109,31 +125,31 @@ handler() {
   render() {
     let lebar =  Dimensions.get('window').width; 
     const {navigation} = this.props;
-    if(navigation.getParam('kategoriID', 'ID')!=0){
+    if(navigation.getParam('kategoriID', 0)!=0){
       vWhere='WHERE KategoriID='+navigation.getParam('kategoriID', 'ID')+';'
     } else if(navigation.getParam('cariBarang', '')!=''){
       vWhere = 'WHERE NamaBarang LIKE "%'+navigation.getParam('cariBarang', '')+'%";'
     } else {vWhere=';'}
     return (
       <View style={{flex:1,  backgroundColor: 'white'}}>
-        <View style={{alignItems:'center', marginTop:3, marginBottom:3, marginLeft:7, marginRight:7, paddingTop:5, paddingBottom:5, backgroundColor:'white'}}>
-          <Image style={{borderRadius:5, width:lebar-10, height: lebar*(1/3), resizeMode: 'stretch'}} 
+        <View style={{alignItems:'center', marginTop:1, marginBottom:3, marginLeft:7, marginRight:7, paddingTop:5, paddingBottom:5, backgroundColor:'white'}}>
+          <Image style={{borderRadius:5, width:lebar-10, height: lebar*(1/2.5), resizeMode: 'stretch'}} 
           source={{uri:'https://www.easyliving.id/images/rent/bukalapak.jpg'}}/>
         </View>
-        <HideableView style={{justifyContent: 'space-around', flexDirection:"row", height:50, alignItems:'center',  backgroundColor:'white'}}>
+        <View style={{justifyContent: 'space-around', flexDirection:"row", height:50, alignItems:'center',  backgroundColor:'white'}}>
           <TouchableOpacity onPress={this.showEasyRentKategoriScreen}>
             <Image source={require('../assets/images/EasyRent/iconKategori.png')} style={{width:40, height:40}}/>
           </TouchableOpacity>
           <TouchableOpacity onPress={()=> this.setState({hideCari: !this.state.hideCari})}>
             <Image source={require('../assets/images/EasyRent/iconCari.png')} style={{width:40, height:40}}/>
           </TouchableOpacity>
-          <TouchableOpacity onPress={null}>
+          <TouchableOpacity onPress={this.showKetentuan}>
             <Image source={require('../assets/images/EasyRent/iconKetentuan.png')} style={{width:40, height:40}}/>
           </TouchableOpacity>
           <TouchableOpacity onPress={this.showEasyRentPasangScreen}>
             <Image source={require('../assets/images/EasyRent/iconPasangIklan.png')} style={{width:40, height:40}}/>
           </TouchableOpacity>
-        </HideableView>
+        </View>
         <HideableView hide={this.state.hideCari} style={{flexDirection:"row", height:55, alignItems:'stretch',  backgroundColor:'white'}}>
           <View style={{height:55, flexDirection:"row", alignItems:'center', backgroundColor:'white'}}>
             <TextInput style={{marginLeft: 10, marginRight:10, marginTop:0, borderRadius:5, height: 40, width:lebar-80,  paddingLeft:5, borderColor: '#b2b2b2', borderWidth: 1, backgroundColor:'#FFFCF4'}}
@@ -142,9 +158,9 @@ handler() {
               onChangeText = {this.cariChangeText}
               onSubmitEditing = {this.cariBarang}
             />
-            <Icon.Button style={{height:40, paddingLeft:18, marginTop:0, paddingTop:7, flexDirection:"row"}}
+            <Icon.Button style={{height:40, paddingLeft:18, marginTop:0, paddingTop:7}}
               name="search"
-              backgroundColor="#3b5998"
+              backgroundColor="dodgerblue"//</View>#3b5998"
               onPress={this.cariBarang}
             ></Icon.Button>
           </View>

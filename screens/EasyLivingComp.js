@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import PropTypes from 'prop-types';
 import ListViewTable from "../components/ListViewTable.js"
-import HideableView from "../components/HideableView.js"
+import {HideableView} from "../components/HideableView.js"
 
 
 

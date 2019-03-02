@@ -26,7 +26,7 @@ class ListViewTable extends React.Component {
         
     getTable = () => {
         var table=[];
-        console.log('getTable ListViewTable: '+this.props.Query);
+//        console.log('getTable ListViewTable: '+this.props.Query);
         return fetch('http://mwn.improva.id:8084/gpsloc/reactnative/API.php', {
           method: 'POST',
           headers: {
@@ -68,7 +68,7 @@ class ListViewTable extends React.Component {
         {
             this.getTable();
         }         
-        console.log('ListViewTable DidUpdate '+this.props.Query);
+//        console.log('ListViewTable DidUpdate '+this.props.Query);
     }
 
     componentWillUnmount(){
@@ -76,7 +76,7 @@ class ListViewTable extends React.Component {
     }
 
     render() {
-        console.log('ListViewTable render: '+this.props.Query);
+//        console.log('ListViewTable render: '+this.props.Query);
         return (
         <View style={{borderRadius:5}}>
           <View style={{height:3, backgroundColor:'#f2f2f2'}}>

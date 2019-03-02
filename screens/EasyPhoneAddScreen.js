@@ -26,11 +26,11 @@ import { Button } from 'react-native-elements';
 let namaWaktu = ['jam','hari','minggu','bulan'];
 let lebar =  Dimensions.get('window').width; 
 
-export default class EasyRentPasangScreen extends React.Component {
+export default class EasyPhoneAddScreen extends React.Component {
   
   static navigationOptions = ({ navigation }) => {
     return{
-      title: "Pasang Iklan"
+      title: "Tambah Nomor Telp"
     };
   };
 
@@ -127,7 +127,7 @@ export default class EasyRentPasangScreen extends React.Component {
 
   submitIklan=()=> {
     this.props.navigation.navigate("EasyRentPasangConfirm",{
-      NamaBarang: this.refs.NamaBarang._lastNativeText, 
+      NamaBarang: this.refs.Nama._lastNativeText, 
       Kategori: this.state.kategoriID, 
       Deskripsi: this.refs.Deskripsi._lastNativeText, 
       TarifSewa: this.refs.TarifSewa._lastNativeText, 
@@ -179,15 +179,6 @@ export default class EasyRentPasangScreen extends React.Component {
         >      
         <ScrollView style={{flex:1, paddingTop:5, paddingLeft:0, paddingRight:0, backgroundColor:'white'}}>   
           <View style={{flex:1,paddingLeft:20, paddingRight:20, backgroundColor:'white'}}>
-          <Text style={styles.inputlabel}> 
-            Nama Barang</Text>
-          <TextInput style={styles.textinputsingleline}
-              ref="NamaBarang"
-              underlineColorAndroid="transparent"
-              onChangeText = {(text) => { this.inputChangeText(text, 'NamaBarang');}}
-              onChangeText={this.cariChangeText}
-              onSubmitEditing={this.cariBarang}
-            />
             <Modal 
               style={{margin:10, borderRadius:5}} 
               backdropColor='gray' 
@@ -206,6 +197,24 @@ export default class EasyRentPasangScreen extends React.Component {
             </View>  
             </TouchableOpacity>
             <Text style={styles.inputlabel}> 
+                Nama</Text>
+            <TextInput style={styles.textinputsingleline}
+              ref="Nama"
+              underlineColorAndroid="transparent"
+              onChangeText = {(text) => { this.inputChangeText(text, 'Nama');}}
+              onChangeText={this.cariChangeText}
+              onSubmitEditing={this.cariBarang}
+            />
+            <Text style={styles.inputlabel}> 
+                Nomor</Text>
+            <TextInput style={styles.textinputsingleline}
+              ref="Nomor"
+              underlineColorAndroid="transparent"
+              onChangeText = {(text) => { this.inputChangeText(text, 'Nomor');}}
+              onChangeText={this.cariChangeText}
+              onSubmitEditing={this.cariBarang}
+            />
+            <Text style={styles.inputlabel}> 
               Deskripsi</Text>
             <TextInput style={styles.textinputmultiline}
               ref="Deskripsi"
@@ -215,55 +224,6 @@ export default class EasyRentPasangScreen extends React.Component {
               onChangeText={this.cariChangeText}
               onSubmitEditing={this.cariBarang}
             />
-            <View style={{flexDirection:'row'}}>
-            <View style={{flexDirection:'column'}}>
-            <Text style={styles.inputlabel}> 
-              Tarif Sewa</Text>
-            <TextInput style={styles.textinputhalfline}
-              ref="TarifSewa"
-              underlineColorAndroid="transparent"
-              autoCapitalize="none"
-              keyboardType="numeric"
-              onChangeText={this.cariChangeText}
-              onSubmitEditing={this.cariBarang}
-            />
-            </View>
-            <View style={{width:150, paddingLeft:20, paddingTop:20}}>
-            <Dropdown
-              ref="SatuanWaktu" 
-              pickerStyle={styles.dropdown}
-              value='perhari'
-              data={arrSatuanWaktu}
-            />
-            </View>
-            </View>
-
-            <View style={{flexDirection:'row'}}>
-            <View style={{flexDirection:'column'}}>
-            <Text style={styles.inputlabel}> 
-              Min Waktu Sewa</Text>
-            <TextInput style={styles.textinputhalfline}
-              ref='MinWaktu'
-              underlineColorAndroid="transparent"
-              autoCapitalize="none"
-              keyboardType="numeric"
-              onChangeText={this.cariChangeText}
-              onSubmitEditing={this.cariBarang}
-            />
-            </View>
-            <View style={{flexDirection:'column'}}>
-            <Text style={styles.inputlabel}> 
-              Max Waktu Sewa</Text>
-            <TextInput style={styles.textinputhalfline}
-              ref="MaxWaktu"
-              underlineColorAndroid="transparent"
-              autoCapitalize="none"
-              keyboardType="numeric"
-              onChangeText={this.cariChangeText}
-              onSubmitEditing={this.cariBarang}
-            />
-            </View>
-            </View>
             <View style={{height:10}}></View>
             <Text style={styles.inputlabel}> 
               Gambar</Text>
@@ -278,7 +238,7 @@ export default class EasyRentPasangScreen extends React.Component {
               <Button buttonStyle={{height:40, width:100, backgroundColor:'mediumseagreen'}}
                 raised
                 onPress={this.submitIklan}
-                title="Pasang"
+                title="Tambah"
                 borderRadius={5}
                 color="#841584"
                 accessibilityLabel="Learn more about this purple button"
