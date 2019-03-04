@@ -73,8 +73,8 @@ export default class EasyPhoneDetailScreen extends React.Component {
     let dataJson = this.props.navigation.getParam('Data', []); 
     var vArr = (dataJson.Number).split(',');  
     var moment = require('moment');
-    let AddOnDate = moment(moment(dataJson.AddOn).format("YYYY-MM-DD HH:mm:ss")).format("DD MMM YYYY HH:mm:ss");
-    let EditOnDate = moment(moment(dataJson.EditOn).format("YYYY-MM-DD HH:mm:ss")).format("DD MMM YYYY HH:mm:ss");
+    let AddOnDate = '20/01/1997';//moment(moment(dataJson.AddOn).format("YYYY-MM-DD HH:mm:ss")).format("DD MMM YYYY HH:mm:ss");
+    let EditOnDate = '20/01/1997';//moment(moment(dataJson.EditOn).format("YYYY-MM-DD HH:mm:ss")).format("DD MMM YYYY HH:mm:ss");
     vQueryAddBy = dataJson.AddBy!=null?'SELECT Nama AS Value FROM tbuser WHERE ID='+dataJson.AddBy+';':'';
     vQueryEditBy = dataJson.EditBy!=null?'SELECT Nama AS Value FROM tbuser WHERE ID='+dataJson.EditBy+';':'';
     return (
@@ -82,7 +82,7 @@ export default class EasyPhoneDetailScreen extends React.Component {
         <View style={{justifyContent: 'flex-end', paddingTop:10, paddingRight:20, flexDirection:"row", height:70, alignItems:'center',  backgroundColor:'white'}}>
             <View style={{width:60, height:50, backgroundColor:'transparent'}}>
               <TouchableOpacity onPress={this.showEasyRentKategoriScreen} style={{flexDirection:"column", justifyContent:'flex-start', alignItems:'center'}}>
-                <Image source={require('../assets/images/Icons/Edit.png')} style={{width:32, height:32, shadowColor: "black", shadowOffset: { height:1, width:1}, shadowRadius:2, shadowOpacity: 0.2}}/>
+                <Image source={require('../assets/icons/Edit.png')} style={{width:32, height:32, shadowColor: "black", shadowOffset: { height:1, width:1}, shadowRadius:2, shadowOpacity: 0.2}}/>
                   <Text style={{color:'gray', marginTop:5, textAlign:'center', textAlignVertical:'bottom', fontSize:12, backgroundColor: 'transparent'}}>
                     Edit
                   </Text>
@@ -91,7 +91,7 @@ export default class EasyPhoneDetailScreen extends React.Component {
             <View style={{width:20}}/>
             <View style={{width:60, height:50, backgroundColor:'transparent'}}>
               <TouchableOpacity onPress={this.askDeletePhone} style={{flexDirection:"column", justifyContent:'flex-start', alignItems:'center'}}>
-                <Image source={require('../assets/images/Icons/Minus.png')} style={{width:32, height:32, shadowColor: "black", shadowOffset: { height:1, width:1}, shadowRadius:2, shadowOpacity: 0.3}}/>
+                <Image source={require('../assets/icons/Minus.png')} style={{width:32, height:32, shadowColor: "black", shadowOffset: { height:1, width:1}, shadowRadius:2, shadowOpacity: 0.3}}/>
                   <Text style={{color:'gray', marginTop:5, textAlign:'center', textAlignVertical:'bottom', fontSize:12, backgroundColor: 'transparent'}}>
                     Hapus
                   </Text>
@@ -112,7 +112,7 @@ export default class EasyPhoneDetailScreen extends React.Component {
                 return(
                   <TouchableOpacity onPress={() => Communications.phonecall(vArr[index], true)}>
                   <View flexDirection='row'>
-                    <Image source={require('../assets/images/Icons/Phone.png')} style={{width:32, height:32, shadowColor: "black", shadowOffset: { height:1, width:1}, shadowRadius:1, shadowOpacity: 0.3}}/>
+                    <Image source={require('../assets/icons/Phone.png')} style={{width:32, height:32, shadowColor: "black", shadowOffset: { height:1, width:1}, shadowRadius:1, shadowOpacity: 0.3}}/>
                     <Text style={{color:'darkmagenta', height:35, paddingLeft:10, textAlign:'left', textAlignVertical:'center', fontSize:20, backgroundColor: 'transparent'}}>
                       {vArr[index].trim()}
                     </Text>

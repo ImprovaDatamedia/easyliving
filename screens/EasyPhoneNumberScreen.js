@@ -11,6 +11,7 @@ import {
   Dimensions,
   Picker,
   TextInput,
+  Alert,
 } from 'react-native';
 import { TextField } from 'react-native-material-textfield';
 import { Dropdown } from 'react-native-material-dropdown';
@@ -21,6 +22,8 @@ import { Button, ListItem } from 'react-native-elements';
 import ListViewTable from "../components/ListViewTable.js";
 import ImageLabelButton from "../components/ImageLabelButton.js";
 //import HideableView from "../components/HideableView.js"
+import {HomeIconButton, DBFlatList, DBSectionList, DBViewList,TextOfMySQLDate} from '../components/react-native-improva.js';
+
 
 
 
@@ -51,35 +54,30 @@ export default class EasyPhoneNumberScreen extends React.Component {
     this.props.navigation.navigate("EasyPhoneDetail", {Data:dataJson});
   }   
 
-
-  drawRow = (dataJson) => {
-    if(dataJson.Level==0){
+  drawItem = (item) => {
+    if(item.Level==0){
       if(this.strip==0){this.strip=1}else{this.strip=0}}
-    var vArr = (dataJson.Number).split(',');  
+    var vArr = (item.Number).split(',');     
     return(
-      <TouchableOpacity onPress={()=>this.showPhoneDetailScreen(dataJson)}>
-      <View key={dataJson.ID} style={{flex:1, height:dataJson.Level==1?100:70, flexDirection:"column",  paddingTop:10, paddingLeft: 10, marginBottom:2, marginLeft:0, marginRight:0, backgroundColor:dataJson.Level==1?dataJson.BackColor:this.strip==0?'white':'#f9f9f9'}}>
-          <Text style={{flex:0.5, color:'gray', textAlign:'left', textAlignVertical:'top', fontSize:18, fontWeight:dataJson.Level==1?'bold':'normal', backgroundColor: 'transparent'}}>
-              {dataJson.Nama}
+      <TouchableOpacity onPress={()=>this.showPhoneDetailScreen(item)}>
+        <View style={{flex:1, height:item.Level==1?100:70, flexDirection:"column",  paddingTop:10, paddingLeft: 10, marginBottom:2, marginLeft:0, marginRight:0, backgroundColor:item.Level==1?item.BackColor:this.strip==0?'white':'#f9f9f9'}}>
+          <Text style={{flex:0.5, color:'gray', textAlign:'left', textAlignVertical:'top', fontSize:18, fontWeight:item.Level==1?'bold':'normal', backgroundColor: 'transparent'}}>
+            {item.Nama}
           </Text>
           <Text style={{color:'gray', width:lebar, textAlign:'left', textAlignVertical:'top', fontSize:14, backgroundColor: 'transparent'}}>
-              {dataJson.Level==1?dataJson.Deskripsi:''}
+            {item.Level==1?item.Deskripsi:''}
           </Text>
-
           <View style={{flex:0.5, flexDirection:"row", justifyContent:"flex-end", alignItems:'flex-end', paddingBottom:10, backgroundColor: 'transparent'}}>
-            {vArr.map(function(name, index){
-              return(
-                <TouchableOpacity style={{backgroundColor: 'transparent'}} onPress={() => Communications.phonecall(name, true)}>
-                  <Text style={{color:'darkmagenta', paddingRight:10, textAlign:'right', fontSize:16, fontWeight:'bold', backgroundColor: 'transparent'}}>
-                    {name}
-                  </Text>
-                </TouchableOpacity>
-              )})}   
+            <Text style={{color:'darkmagenta', paddingRight:10, textAlign:'right', fontSize:16, fontWeight:'bold', backgroundColor: 'transparent'}}>
+              {item.Number}
+            </Text>
           </View>
-        </View>
-      </TouchableOpacity>   
+        </View>   
+      </TouchableOpacity>
     )
   }
+
+
 
 /*  drawRow = (dataJson) => {
     var vArr = (dataJson.Number).split(',');  
@@ -106,7 +104,7 @@ export default class EasyPhoneNumberScreen extends React.Component {
         <View style={{justifyContent: 'flex-end', paddingTop:10, paddingRight:20, flexDirection:"row", height:60, alignItems:'center',  backgroundColor:'white'}}>
             <View style={{width:60, height:50, backgroundColor:'transparent'}}>
               <TouchableOpacity onPress={this.showEasyRentKategoriScreen} style={{flexDirection:"column", justifyContent:'flex-start', alignItems:'center'}}>
-                <Image source={require('../assets/images/Icons/Question.png')} style={{width:32, height:32, shadowColor: "black", shadowOffset: { height:1, width:1}, shadowRadius:2, shadowOpacity: 0.3}}/>
+                <Image source={require('../assets/icons/Question.png')} style={{width:32, height:32, shadowColor: "black", shadowOffset: { height:1, width:1}, shadowRadius:2, shadowOpacity: 0.3}}/>
                   <Text style={{color:'gray', marginTop:5, textAlign:'center', textAlignVertical:'bottom', fontSize:12, backgroundColor: 'transparent'}}>
                     Ketentuan
                   </Text>
@@ -115,7 +113,7 @@ export default class EasyPhoneNumberScreen extends React.Component {
             <View style={{width:20}}/>
             <View style={{width:60, height:50, backgroundColor:'transparent'}}>
               <TouchableOpacity onPress={this.showEasyPhoneAddScreen} style={{flexDirection:"column", justifyContent:'flex-start', alignItems:'center'}}>
-                <Image source={require('../assets/images/Icons/Plus.png')} style={{width:32, height:32, shadowColor: "black", shadowOffset: { height:1, width:1}, shadowRadius:1, shadowOpacity: 0.3}}/>
+                <Image source={require('../assets/icons/Plus.png')} style={{width:32, height:32, shadowColor: "black", shadowOffset: { height:1, width:1}, shadowRadius:1, shadowOpacity: 0.3}}/>
                   <Text style={{color:'gray', marginTop:5, textAlign:'center', textAlignVertical:'bottom', fontSize:12, backgroundColor: 'transparent'}}>
                     Tambah
                   </Text>
@@ -138,13 +136,11 @@ export default class EasyPhoneNumberScreen extends React.Component {
 
           </View>
         </View>
-
-        <ScrollView style={{flex:1, paddingTop:0, paddingLeft:0, paddingRight:0, backgroundColor:'white'}}>   
-          <ListViewTable
-            Query = {'SELECT * FROM tbphone '+vWhere}
-            onRenderRow = {this.drawRow}
-          />
-        </ScrollView>
+        <DBFlatList style={{flex:1, paddingTop:2, paddingLeft:0, paddingRight:0, backgroundColor:'#f0f0f0'}}
+          query = {'SELECT * FROM easyliving.tbphone '+vWhere}
+          onRenderItem={this.drawItem}
+          onTableEmpty = {() => {Alert.alert('eLiving','Sorry, the contact you are looking for is not available')}}
+        />
       </View>   
     );
   }

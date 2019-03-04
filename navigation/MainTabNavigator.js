@@ -32,6 +32,7 @@ import EasyRentDetailScreen from '../screens/EasyRentDetailScreen';
 import EasyAdminLocScreen from '../screens/EasyAdminLoc';
 import EasyPhoneAddScreen from '../screens/EasyPhoneAddScreen';
 import EasyWebBrowserScreen from '../screens/EasyWebBrowserScreen';
+import EasyMartBarangDetailScreen from '../screens/EasyMartBarangDetail';
 
 
 
@@ -60,6 +61,7 @@ const HomeStack = createStackNavigator({
   EasyAdminLoc : EasyAdminLocScreen,
   EasyPhoneAdd : EasyPhoneAddScreen,
   EasyWebBrowser : EasyWebBrowserScreen,
+  EasyMartBarangDetail : EasyMartBarangDetailScreen,
 });
 
 

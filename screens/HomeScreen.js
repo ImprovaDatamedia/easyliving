@@ -31,7 +31,7 @@ export default class HomeScreen extends React.Component {
 
   goto=(screenName, params)=>{
     if(screenName!=''){this.props.navigation.navigate(screenName, params)}
-    else{Alert.alert('eLiving',"Sorry to dissapoint you, the page is not ready yet, we'll work hard to release it soon")}
+    else{Alert.alert('eLiving',"Sorry to dissapoint you, the page is not ready yet, we are working hard to make it ready for you soon")}
   }
 
   render() {
@@ -48,25 +48,25 @@ export default class HomeScreen extends React.Component {
             </View> 
             <ScrollView style={{paddingTop:10, backgroundColor:'#f8f8f8'}}>   
                 <View style={{flex:1, justifyContent: 'space-around', flexDirection:"row", height:100, alignItems:'center',  backgroundColor:'white'}}>
-                  <HomeIconButton onPress={()=>{this.goto("EasyGo")}} imageSource={require('../assets/icons/iconEasyGo.png')} label='Transport' style={{width:80, height:60}}/>
-                  <HomeIconButton onPress={()=>{this.goto("")}} imageSource={require('../assets/icons/iconEasyMart.png')} label='Mart' style={{width:80, height:60}}/>
-                  <HomeIconButton onPress={()=>{this.goto("EasyService")}} imageSource={require('../assets/icons/iconEasyService.png')} label='Service' style={{width:80, height:60}}/>
-                  <HomeIconButton onPress={()=>{this.goto("EasyBuild")}} imageSource={require('../assets/icons/iconEasyBuild.png')} label='Build' style={{width:80, height:60}}/>
+                  <HomeIconButton onPress={()=>{this.goto("EasyGo")}} imageSource={require('../assets/icons/iconEasyGo.png')} label='Transport' labelStyle='eLiving' style={{width:80, height:60}}/>
+                  <HomeIconButton onPress={()=>{this.goto("EasyMart")}} imageSource={require('../assets/icons/iconEasyMart.png')} label='Mart' labelStyle='eLiving' style={{width:80, height:60}}/>
+                  <HomeIconButton onPress={()=>{this.goto("EasyService")}} imageSource={require('../assets/icons/iconEasyService.png')} label='Service' labelStyle='eLiving' style={{width:80, height:60}}/>
+                  <HomeIconButton onPress={()=>{this.goto("EasyBuild")}} imageSource={require('../assets/icons/iconEasyBuild.png')} label='Build' labelStyle='eLiving' style={{width:80, height:60}}/>
                 </View>
                 <View style={{flex:1, justifyContent: 'space-around', flexDirection:"row", height:100, alignItems:'center',  backgroundColor:'white'}}>
-                  <HomeIconButton onPress={()=>{this.goto("")}} imageSource={require('../assets/icons/iconEasyFood.png')} label='Food' style={{width:80, height:60}}/>
-                  <HomeIconButton onPress={()=>{this.goto("EasyRent")}} imageSource={require('../assets/icons/iconEasyRent.png')} label='Rental' style={{width:80, height:60}}/>
-                  <HomeIconButton onPress={()=>{this.goto("")}} imageSource={require('../assets/icons/iconEasyTrade.png')} label='Trade' style={{width:80, height:60}}/>
-                  <HomeIconButton onPress={()=>{this.goto("")}} imageSource={require('../assets/icons/iconEasySport.png')} label='Sport' style={{width:80, height:60}}/>
+                  <HomeIconButton onPress={()=>{this.goto("")}} imageSource={require('../assets/icons/iconEasyFood.png')} label='Food' labelStyle='eLiving' style={{width:80, height:60}}/>
+                  <HomeIconButton onPress={()=>{this.goto("EasyRent")}} imageSource={require('../assets/icons/iconEasyRent.png')} label='Rental' labelStyle='eLiving' style={{width:80, height:60}}/>
+                  <HomeIconButton onPress={()=>{this.goto("")}} imageSource={require('../assets/icons/iconEasyTrade.png')} label='Trade' labelStyle='eLiving' style={{width:80, height:60}}/>
+                  <HomeIconButton onPress={()=>{this.goto("")}} imageSource={require('../assets/icons/iconEasySport.png')} label='Sport' labelStyle='eLiving' style={{width:80, height:60}}/>
                 </View>
                 <View style={{alignItems:'center', marginTop:3, marginBottom:3, marginLeft:7, marginRight:7, paddingTop:20, paddingBottom:20, backgroundColor:'white'}}>
                     <Image style={{borderRadius:5, width:lebar-10, height: lebar*(1/2.5), resizeMode: 'stretch'}} source={require('../assets/images/HomeScreen/adFirst.png')}/>
                 </View> 
                 <View style={{flex:1, justifyContent: 'space-around', flexDirection:"row", height:100, alignItems:'center',  backgroundColor:'white'}}>
-                  <HomeIconButton onPress={()=>{this.goto("RTRW")}} imageSource={require('../assets/icons/iconRTRW.png')} label='RTRW' style={{width:80, height:60}}/>
-                  <HomeIconButton onPress={()=>{this.goto("")}} imageSource={require('../assets/icons/iconPOI.png')} label='Place' style={{width:80, height:60}}/>
-                  <HomeIconButton onPress={()=>{this.goto("EasyPhoneKategori")}} imageSource={require('../assets/icons/iconPhoneNumbers.png')} label='Contact' style={{width:80, height:60}}/>
-                  <HomeIconButton onPress={()=>{this.goto("")}} imageSource={require('../assets/icons/iconAboutSentulCity.png')} label='Sentul' style={{width:80, height:60}}/>
+                  <HomeIconButton onPress={()=>{this.goto("RTRW")}} imageSource={require('../assets/icons/iconRTRW.png')} label='RTRW' labelStyle='eLiving' style={{width:80, height:60}}/>
+                  <HomeIconButton onPress={()=>{this.goto("")}} imageSource={require('../assets/icons/iconPOI.png')} label='Places' labelStyle='eLiving' style={{width:80, height:60}}/>
+                  <HomeIconButton onPress={()=>{this.goto("EasyPhoneKategori")}} imageSource={require('../assets/icons/iconPhoneNumbers.png')} label='Contact' labelStyle='eLiving' style={{width:80, height:60}}/>
+                  <HomeIconButton onPress={()=>{this.goto("")}} imageSource={require('../assets/icons/iconAboutSentulCity.png')} label='Sentul' labelStyle='eLiving' style={{width:80, height:60}}/>
                 </View>
                 <View style={{alignItems:'center', marginTop:3, marginBottom:3, paddingTop:20, paddingBottom:20, marginLeft:7, marginRight:7, backgroundColor:'white'}}>
                     <Image style={{borderRadius:5, width:lebar-10, height: lebar*(1/2.5), resizeMode: 'stretch'}} source={require('../assets/images/HomeScreen/adThird.jpg')}/>
@@ -78,9 +78,11 @@ export default class HomeScreen extends React.Component {
 
                   <DBViewList
                     query = 'SELECT * FROM tbnews;'
-                    onRenderItem={({item}) => (
-                      <View style={{marginTop:0, marginBottom:2, paddingTop:20, paddingBottom:5, paddingLeft:10, marginLeft:0, paddingRight:10, marginRight:0, backgroundColor:'white'}}>
+                    onRenderItem={(item) => (
+                      <View key={item.ID} style={{marginTop:0, marginBottom:2, paddingTop:20, paddingBottom:5, paddingLeft:10, marginLeft:0, paddingRight:10, marginRight:0, backgroundColor:'white'}}>
                       <TouchableOpacity  onPress={()=>{this.goto("EasyWebBrowser", {url:item.Link})}}>
+                      <TextOfMySQLDate dateSQL={item.Tanggal} dateOnly={true} style={{color:'gray', textAlign:'right', fontSize:12, fontWeight:'normal', backgroundColor: 'transparent'}}>
+                      </TextOfMySQLDate>
                       <Text  style={{color:'gray', textAlign:'left', fontSize:16, fontWeight:'bold', backgroundColor: 'transparent'}}>
                         {item.Judul}
                       </Text>
@@ -88,7 +90,7 @@ export default class HomeScreen extends React.Component {
                         {item.Berita}
                       </Text>   
                       </TouchableOpacity>   
-                      </View>            
+                      </View>  
                     )}
                   />
 

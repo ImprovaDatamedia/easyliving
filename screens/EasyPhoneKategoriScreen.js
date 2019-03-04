@@ -18,7 +18,9 @@ import Modal from "react-native-modal";
 import EasyRentKategoriList from "./EasyLivingComp.js";
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { Button, ListItem } from 'react-native-elements';
-import ListViewTable from "../components/ListViewTable.js"
+import ListViewTable from "../components/ListViewTable.js";
+import {HomeIconButton, DBFlatList, DBSectionList, DBViewList,TextOfMySQLDate} from '../components/react-native-improva.js';
+
 
 let lebar =  Dimensions.get('window').width; 
 
@@ -56,13 +58,13 @@ export default class EasyPhoneKategoriScreen extends React.Component {
     )
   }
 */
-drawRow = (dataJson) => {
+drawRow = (item) => {
   this.strip=!this.strip;
   return(
     <ListItem containerStyle={{backgroundColor:this.strip?'white':'#f8f8f8',  borderBottomWidth: 1, borderBottomColor: '#e8e8e8'}}
-      onPress={()=>this.showEasyPhoneNumberScreen(dataJson.ID, dataJson.Nama)}
-      key={dataJson.ID}
-      title={dataJson.Nama}
+      onPress={()=>this.showEasyPhoneNumberScreen(item.ID, item.Nama)}
+      key={item.ID}
+      title={item.Nama}
       chevronColor="gray"
       chevron
   />
@@ -94,12 +96,10 @@ drawRow = (dataJson) => {
           </View>
         </View>
 
-        <ScrollView style={{flex:1, paddingTop:0, paddingLeft:0, paddingRight:0, backgroundColor:'white'}}>   
-          <ListViewTable
-          Query = {'SELECT * FROM tbphonekategori;'}
-          onRenderRow = {this.drawRow}
+        <DBFlatList style={{flex:1, paddingTop:2, paddingLeft:0, paddingRight:0, backgroundColor:'#f0f0f0'}}
+          query = 'SELECT * FROM tbphonekategori;'
+          onRenderItem={this.drawRow}
         />
-        </ScrollView>
       </View>   
     );
   }

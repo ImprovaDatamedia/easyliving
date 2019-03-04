@@ -2,7 +2,7 @@
  
                 <DBFlatList
                   query = 'SELECT * FROM tbphone;'
-                  onRenderItem={({item}) => (
+                  onRenderItem={(item) => (
                     <ListItem
                       title={item.Nama}
                       subtitle={item.Number}
@@ -14,10 +14,10 @@
                   <DBSectionList
                   query = 'SELECT * FROM tbeasyrent ORDER BY UserID;'
                   sectionField = 'UserID'
-                  onRenderSectionHeader={({section}) => (
+                  onRenderSectionHeader={(section) => (
                     <Text>{section.section}</Text>
                   )}
-                  onRenderItem={({item}) => (
+                  onRenderItem={(item) => (
                     <Text>{item.NamaBarang}</Text>
                   )}
                 /> 
