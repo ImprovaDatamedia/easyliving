@@ -51,13 +51,6 @@ export default class EasyTransportScreen extends React.Component {
       <View style={styles.container}>
         <ScrollView style={styles.ScrollView} contentContainerStyle={styles.contentContainer}>
           <View style={{alignItems: 'center', marginTop: 2, marginBottom: 20}}>
-          {
-            this.state.fontLoaded ? (
-              <Text  style={{color:'cornflowerblue', fontFamily : 'Franklin Gothic Book',  paddingTop: 15, height:45, width:this.lebar, textAlign:'center', textAlignVertical:'center', fontSize:26,  backgroundColor: 'transparent'}}>
-              Shuttle Sentul
-              </Text>
-            ):null
-          }
               <Text  style={{color:'cornflowerblue', fontFamily : 'Verdana',  paddingTop: 15, height:45, width:this.lebar, textAlign:'center', textAlignVertical:'center', fontSize:26,  backgroundColor: 'transparent'}}>
               Shuttle Sentul
               </Text>
@@ -114,8 +107,9 @@ export default class EasyTransportScreen extends React.Component {
             <Text  style={{color:'dodgerblue', paddingTop: 0, height:35, width:this.lebar, textAlign:'center', textAlignVertical:'center', fontSize:26, fontWeight:'bold', backgroundColor: 'transparent'}}>
             Shuttle Bandara
             </Text>
-            <Image style={{width:this.lebar, height:10+this.lebar*130/393, resizeMode: 'contain'}}
+            <Image style={{width:this.lebar*0.5, height:10+this.lebar*0.5*130/393, resizeMode: 'contain'}}
                 source={require('../assets/images/JA_Connexion.png')}/>
+            <View style={{height:50}}/>
             <Text  style={{color:'gray', marginTop: 5, width:this.lebar, height:25, textAlign:'left', marginLeft:25, fontSize:16, fontWeight:'bold', backgroundColor: 'transparent'}}>
             Jam Operational: 05:00 - 17:00
             </Text>

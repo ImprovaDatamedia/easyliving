@@ -98,7 +98,7 @@ export default class EasyPhoneNumberScreen extends React.Component {
 */
   render() {
     let lebar =  Dimensions.get('window').width; 
-    let vWhere = 'where KategoriID='+this.props.navigation.getParam('KategoriID', 0)+';'; 
+    let vWhere = 'where KategoriID='+this.props.navigation.getParam('KategoriID', 0); 
     return (
       <View style={{flex:1,  backgroundColor: 'white'}}>
         <View style={{justifyContent: 'flex-end', paddingTop:10, paddingRight:20, flexDirection:"row", height:60, alignItems:'center',  backgroundColor:'white'}}>
@@ -140,7 +140,8 @@ export default class EasyPhoneNumberScreen extends React.Component {
           query = {'SELECT * FROM easyliving.tbphone '+vWhere}
           onRenderItem={this.drawItem}
           onTableEmpty = {() => {Alert.alert('eLiving','Sorry, the contact you are looking for is not available')}}
-        />
+          limit = {10}
+/>
       </View>   
     );
   }

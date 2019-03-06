@@ -53,6 +53,7 @@ const AppStack = createStackNavigator({
  });
 const AuthStack = createStackNavigator({ SignIn: Login });
 
+
 export default createAppContainer(createSwitchNavigator(
   {
     AuthLoading: AuthLoadingScreen,
@@ -63,6 +64,15 @@ export default createAppContainer(createSwitchNavigator(
     initialRouteName: 'AuthLoading',
   }
 ));
+
+
+/*
+export default createAppContainer(createSwitchNavigator(
+  {
+    Main: Main,
+  }
+));
+*/
 
 const styles = StyleSheet.create({
   container: {

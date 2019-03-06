@@ -151,7 +151,7 @@ export default class EasyRentPasangScreen extends React.Component {
   
   writeKategori=(kategoriID, kategoriNama)=>{
       return(
-        <View style={{flex:1, flexDirection:'row', justifyContent:'stretch'}}>
+        <View style={{flex:1, flexDirection:'row', justifyContent:'flex-start'}}>
         <Text  style={{color:'#a3a3a3', width:80, height:50, paddingTop:22, fontSize:14, backgroundColor: 'transparent'}}>
           Kategori
         </Text>

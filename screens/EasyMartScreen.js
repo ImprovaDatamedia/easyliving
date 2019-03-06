@@ -10,14 +10,25 @@ import {
   View,
   WebView,
   Dimensions,
+  Alert,
   TextInput,
 } from 'react-native';
-import {HomeIconButton, DBFlatList, ImageAlter, DisplayHarga, DBViewList,TextOfMySQLDate, HideableView, RupiahFormat} from '../components/react-native-improva.js';
+import {
+  HomeIconButton, 
+  DBFlatList, 
+  ImageAlter, 
+  DisplayHarga, 
+  HideableView, 
+  ActionIconButton
+} from '../components/react-native-improva.js';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import { Button } from 'react-native-elements';
 
 
 
 export default class EasyMartScreen extends React.Component {
+
+
   static navigationOptions = {
     title: 'Easy Mart',
   };
@@ -27,12 +38,34 @@ export default class EasyMartScreen extends React.Component {
 //    this.handler = this.handler.bind(this);
     this.state={
       hideCari:true,
+      hideBanner:false,
     }
   };
-
   
   showEasyMartBarangDetailScreen(item){
     this.props.navigation.navigate("EasyMartBarangDetail", {Data:item});
+  }
+
+  renderFooter = () => {
+    return(
+      <View style={{height:90, flexDirection:"row", justifyContent:'center', alignItems:'center', marginBottom:2, marginLeft:4, marginRight:4, borderRadius:5, backgroundColor:'white'}}>
+              <Button buttonStyle={{height:40, width:100, alignItems:'center', backgroundColor:'mediumseagreen'}}
+                raised
+                onPress={()=> Alert.alert('eMart','Load More')}
+                title="Load More"
+                borderRadius={5}
+                color="#841584"
+              />                
+      </View>   
+    )
+  }
+
+  listScroll=(event)=> {
+    if (event.nativeEvent.contentOffset.y<=0) {
+      if(this.state.hideBanner==true){this.setState({hideBanner:false})}
+    } else {
+      if(this.state.hideBanner==false){this.setState({hideBanner:true})}
+    }
   }
 
   drawItem = (item) => {
@@ -60,39 +93,66 @@ export default class EasyMartScreen extends React.Component {
       )
     }
     
+    cariBarang=()=>{
+//      this.cariText = this.refs.cariText._lastNativeText, 
+      this.setState({hideCari: true});
+      this.props.navigation.setParams({kategoriID: 0});
+      this.props.navigation.setParams({cariBarang: this.refs.cariText._lastNativeText});
+    } 
+
+
+  showCariTextInput=()=>{
+    //this._focusNextField('cariText');
+    this.setState({hideCari: !this.state.hideCari});
+//    this.cariText._root.focus(); 
+//    if(this.passTextInput!=null){ 
+//      this.passTextInput.focus()
+//    }
+  }
 
   render() {
     let lebar =  Dimensions.get('window').width; 
     const {navigation} = this.props;
+    vWhere = '';
+    if(navigation.getParam('kategoriID', 0)!=0){
+      vWhere='WHERE KategoriID='+navigation.getParam('kategoriID', 0)
+    } else if(navigation.getParam('cariBarang', '')!=''){
+      vWhere = 'WHERE Nama LIKE "%'+navigation.getParam('cariBarang', '')+'%"'
+    }
     return (
       <View  style={{flex:1}}>
-        <View style={{alignItems:'center', marginTop:1, marginBottom:0, marginLeft:0, marginRight:0, paddingTop:0, paddingBottom:0, backgroundColor:'white'}}>
+        <View hide={this.state.hideBanner} style={{alignItems:'center', marginTop:1, marginBottom:0, marginLeft:0, marginRight:0, paddingTop:0, paddingBottom:0, backgroundColor:'white'}}>
           <Image style={{borderRadius:0, width:lebar, height: lebar*(1/2.5), resizeMode: 'stretch'}} 
             source={{uri:'https://www.easyliving.id/images/rent/bukalapak.jpg'}}/>
         </View>
-        <View style={{justifyContent: 'space-around', flexDirection:"row", paddingTop:5, height:50, alignItems:'center',  backgroundColor:'#4a485f'}}>
-          <HomeIconButton onPress={this.showEasyRentKategoriScreen} imageSource={require('../assets/icons/Kategori.png')} label='Kategori' labelStyle='small' darkMode={true} style={{width:60, height:45}}/>
-          <HomeIconButton onPress={()=> this.setState({hideCari: !this.state.hideCari})} imageSource={require('../assets/icons/Search.png')} label='Cari' labelStyle='small' darkMode={true} style={{width:60, height:45}}/>
-          <HomeIconButton onPress={this.showKetentuan} imageSource={require('../assets/icons/Ketentuan.png')} label='Ketentuan' labelStyle='small' darkMode={true} style={{width:60, height:45}}/>
-          <HomeIconButton onPress={this.showEasyRentPasangScreen} imageSource={require('../assets/icons/Basket.png')} label='Keranjang' labelStyle='small' darkMode={true} style={{width:60, height:45}}/>
+        <View style={{justifyContent: 'space-around', flexDirection:"row", paddingTop:5, height:50, alignItems:'flex-start',  backgroundColor:'#4a485f'}}>
+          <ActionIconButton onPress={this.showEasyRentKategoriScreen} name="list" label='Kategori'/>
+          <ActionIconButton onPress={this.showCariTextInput} name="search" label='Cari'/>
+          <ActionIconButton onPress={this.showKetentuan} name="list-alt" label='Ketentuan'/>
+          <ActionIconButton onPress={this.showEasyRentPasangScreen} name="shopping-basket" label='Keranjang'/>
         </View>
-        <HideableView hide={this.state.hideCari} style={{flexDirection:"row", height:55, alignItems:'center',  backgroundColor:'#4a485f'}}>
+        <HideableView hide={this.state.hideCari} style={{flexDirection:"row", height:55, alignItems:'center',  backgroundColor:'#514e65'}}>
             <TextInput style={{marginLeft: 10, marginRight:10, marginTop:0, borderRadius:5, height: 40, width:lebar-80,  paddingLeft:5, borderColor: '#b2b2b2', borderWidth: 1, backgroundColor:'#FFFCF4'}}
               underlineColorAndroid = "transparent"
+              ref = "cariText" 
               autoCapitalize = "none"
               onChangeText = {this.cariChangeText}
               onSubmitEditing = {this.cariBarang}
+              autoFocus = {true}
             />
             <Icon.Button style={{height:40, paddingLeft:18, marginTop:0, paddingTop:7}}
               name="search"
-              backgroundColor="#0a3e74"//</View>#3b5998"
+              backgroundColor="#3a384f"//</View>#3b5998"
               onPress={this.cariBarang}
             ></Icon.Button>
         </HideableView>
         <DBFlatList style={{flex:1, paddingTop:2, paddingLeft:0, paddingRight:0, backgroundColor:'#f0f0f0'}}
-          query = {'SELECT * FROM skawan.tbbarang'} 
+          query = {'SELECT * FROM skawan.tbbarang '+vWhere} 
           onRenderItem = {this.drawItem}
           onTableEmpty = {() => {Alert.alert('eLiving','No item available in this category')}}
+          onRenderFooter = {this.renderFooter}
+          onScroll = {this.listScroll}
+          limit = {20}
         />
 
         </View>    

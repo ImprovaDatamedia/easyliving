@@ -22,6 +22,7 @@ import {Kohana} from 'react-native-textinput-effects';
 import MaterialsIcon from 'react-native-vector-icons/MaterialIcons';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { Button } from 'react-native-elements';
+import { ImageManipulator } from 'expo';
 
 
 export default class EasyRentPasangConfirmScreen extends React.Component {
@@ -36,8 +37,9 @@ export default class EasyRentPasangConfirmScreen extends React.Component {
  
 
   confirmPasang=()=>{
-    const {params} = this.props.navigation.state;  
-    this.putTable(params);
+    // const {params} = this.props.navigation.state;  
+    this.uploadImage();
+//    this.putTable(params);
   }
 
   putTable = (params) => {
@@ -45,6 +47,7 @@ export default class EasyRentPasangConfirmScreen extends React.Component {
     var moment = require('moment');
     var Tanggal = moment(new Date()).format("YYYY-MM-DD HH:mm:ss");
     var vQuery = "INSERT INTO easyliving.tbeasyrent (UserID, Tanggal, NamaBarang, KategoriID, Deskripsi, Harga, Waktu, MinWaktu, MaxWaktu, Gambar) VALUES ('"+UserID+"', '"+Tanggal+"', '"+params.NamaBarang+"', '"+params.Kategori+"', '"+params.Deskripsi+"', '"+params.TarifSewa+"', '"+params.SatuanWaktu+"', '"+params.MinWaktu+"', '"+params.MaxWaktu+"', '"+params.Imguri1+"');"
+    this.uploadImage();
     return fetch('http://mwn.improva.id:8084/gpsloc/reactnative/API.php', {
       method: 'POST',
       headers: {
@@ -60,7 +63,6 @@ export default class EasyRentPasangConfirmScreen extends React.Component {
       console.log(vStr);
       if(vStr.indexOf('Record Successfully Updated')!=-1){
         Alert.alert('eRent','Iklan berhasil dipasang');
-        this.uploadImage();
       } 
       else
         {Alert.alert('eRent','Gagal memasang iklan')} 
@@ -69,15 +71,23 @@ export default class EasyRentPasangConfirmScreen extends React.Component {
       alert('Error'); 
     });
   }
-
-  uploadImage = () => {
+  
+  uploadImage = async() => {
+    console.log('upload');
+    const {params} = this.props.navigation.state;  
     let formData = new FormData();
+//    const manipResult = await ImageManipulator.manipulateAsync(
+ //    this.props.Imguri1,
+//      [{ resize: { width: 640, height: 480 } }],
+//      { format: 'jpg' }
+//    );
+ 
     formData.append('photo', {
-     uri : this.props.Imguri1,
-     name: this.props.ImgFilename1,
+     uri : params.Imguri1,
+     name: params.ImgFilename1,
      type : 'image/jpg',
     });
-    fetch('http://192.168.43.184:8080/api/app/index.php/datalogin/uploadFoto', {
+    fetch('http://www.easyliving.id/app/index.php/datalogin/uploadImage', {
       headers: {
         Accept: 'application/json',
         'Content-Type': 'multipart/form-data',
@@ -96,6 +106,8 @@ export default class EasyRentPasangConfirmScreen extends React.Component {
     const {params} = this.props.navigation.state;  
     if(params.MinWaktu>1){minWaktuSewa=', min:'+params.MinWaktu+' '+params.SatuanWaktu} else {minWaktuSewa=''};
     if(params.MaxWaktu!=0){maxWaktuSewa=', max:'+params.MaxWaktu+' '+params.SatuanWaktu} else {maxWaktuSewa=''};
+    console.log(JSON.stringify(params.Imguri1));
+    console.log(JSON.stringify(params.ImgFilename1));
     return(
         <View style={{height:120, flexDirection:"row", alignItems:'flex-start', marginBottom:8, marginLeft:7, marginRight:7, borderRadius:5, backgroundColor:'white'}}>
           <Image source={{uri: params.Imguri1}} style={{marginTop:10, marginLeft:10, width:80, height:80, borderRadius:3, resizeMode: 'stretch'}}/>

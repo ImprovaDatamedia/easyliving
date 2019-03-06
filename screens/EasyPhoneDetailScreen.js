@@ -73,8 +73,8 @@ export default class EasyPhoneDetailScreen extends React.Component {
     let dataJson = this.props.navigation.getParam('Data', []); 
     var vArr = (dataJson.Number).split(',');  
     var moment = require('moment');
-    let AddOnDate = '20/01/1997';//moment(moment(dataJson.AddOn).format("YYYY-MM-DD HH:mm:ss")).format("DD MMM YYYY HH:mm:ss");
-    let EditOnDate = '20/01/1997';//moment(moment(dataJson.EditOn).format("YYYY-MM-DD HH:mm:ss")).format("DD MMM YYYY HH:mm:ss");
+    if(dataJson.AddOn!=null){AddOnDate = moment(moment(dataJson.AddOn).format()).format("DD MMM YYYY  HH:mm:ss")} else {let AddOnDate=''};
+    if(dataJson.EditOn!=null){EditOnDate = moment(moment(dataJson.EditOn).format()).format("DD MMM YYYY  HH:mm:ss")} else {let EditOnDate=''};
     vQueryAddBy = dataJson.AddBy!=null?'SELECT Nama AS Value FROM tbuser WHERE ID='+dataJson.AddBy+';':'';
     vQueryEditBy = dataJson.EditBy!=null?'SELECT Nama AS Value FROM tbuser WHERE ID='+dataJson.EditBy+';':'';
     return (
@@ -108,20 +108,20 @@ export default class EasyPhoneDetailScreen extends React.Component {
           </Text>
           <View style={{height:30}}/>
           <View style={{height:80, flexDirection:"column", alignItems:'flex-start'}}>
-              {vArr.map(function(name, index){
+              {vArr.map(function(Number, index){
                 return(
-                  <TouchableOpacity onPress={() => Communications.phonecall(vArr[index], true)}>
+                  <TouchableOpacity key={index} onPress={() => Communications.phonecall(Number, true)}>
                   <View flexDirection='row'>
                     <Image source={require('../assets/icons/Phone.png')} style={{width:32, height:32, shadowColor: "black", shadowOffset: { height:1, width:1}, shadowRadius:1, shadowOpacity: 0.3}}/>
-                    <Text style={{color:'darkmagenta', height:35, paddingLeft:10, textAlign:'left', textAlignVertical:'center', fontSize:20, backgroundColor: 'transparent'}}>
-                      {vArr[index].trim()}
+                    <Text style={{color:'darkmagenta', height:35, paddingLeft:10, paddingTop:5, textAlign:'left', textAlignVertical:'center', fontSize:20, backgroundColor: 'transparent'}}>
+                      {Number.trim()}
                     </Text>
                     </View>
                   </TouchableOpacity>
                 )
               })}
           </View>
-          <Text style={{color:'#a0a0a0', textAlign:'left', textAlignVertical:'center', fontSize:18, backgroundColor: 'transparent'}}>
+          <Text style={{color:'#707070', textAlign:'left', textAlignVertical:'center', fontSize:18, backgroundColor: 'transparent'}}>
             {dataJson.Deskripsi} 
           </Text>
           </View>
@@ -131,7 +131,7 @@ export default class EasyPhoneDetailScreen extends React.Component {
           <Text style={{color:'#a0a0a0', textAlign:'left', textAlignVertical:'center', fontSize:14, backgroundColor: 'transparent'}}>
             Ditambahkan oleh: 
           </Text>
-          <DBText Query={vQueryAddBy} onEmptyText='Admin' style={{color:'blue', marginLeft:15, textAlign:'left', textAlignVertical:'center', fontSize:16, backgroundColor: 'transparent'}}/>
+          <DBText query={vQueryAddBy} onEmptyText='Admin' style={{color:'blue', marginLeft:15, textAlign:'left', textAlignVertical:'center', fontSize:16, backgroundColor: 'transparent'}}/>
           <Text style={{color:'#404040', marginLeft:15, textAlign:'left', textAlignVertical:'center', fontSize:16, backgroundColor: 'transparent'}}>
           {dataJson.AddOn!=null?AddOnDate:""}
           </Text>
@@ -139,7 +139,7 @@ export default class EasyPhoneDetailScreen extends React.Component {
           <Text style={{color:'#a0a0a0', textAlign:'left', textAlignVertical:'center', fontSize:14, backgroundColor: 'transparent'}}>
             Diedit oleh: 
           </Text>
-          <DBText Query={vQueryEditBy} onEmptyText='-' style={{color:'blue', marginLeft:15, textAlign:'left', textAlignVertical:'center', fontSize:16, backgroundColor: 'transparent'}}/>
+          <DBText query={vQueryEditBy} onEmptyText='-' style={{color:'blue', marginLeft:15, textAlign:'left', textAlignVertical:'center', fontSize:16, backgroundColor: 'transparent'}}/>
           <Text style={{color:'#404040', marginLeft:15, textAlign:'left', textAlignVertical:'center', fontSize:16, backgroundColor: 'transparent'}}>
           {dataJson.EditOn!=null?EditOnDate:""}
           </Text>

@@ -29,7 +29,7 @@ import EasyPhoneKategoriScreen from '../screens/EasyPhoneKategoriScreen';
 import EasyPhoneNumberScreen from '../screens/EasyPhoneNumberScreen';
 import EasyPhoneDetailScreen from '../screens/EasyPhoneDetailScreen';
 import EasyRentDetailScreen from '../screens/EasyRentDetailScreen';
-import EasyAdminLocScreen from '../screens/EasyAdminLoc';
+import EasyAdminLocScreen from '../screens/EasyAdminLocScreen';
 import EasyPhoneAddScreen from '../screens/EasyPhoneAddScreen';
 import EasyWebBrowserScreen from '../screens/EasyWebBrowserScreen';
 import EasyMartBarangDetailScreen from '../screens/EasyMartBarangDetail';

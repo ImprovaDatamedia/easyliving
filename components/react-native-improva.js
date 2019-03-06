@@ -4,9 +4,10 @@ import React from 'react';
 import {ExpoConfigView } from '@expo/samples';
 import {View,Text,TouchableOpacity,Image, FlatList, SectionList, StyleSheet} from 'react-native';
 import {ListItem} from 'react-native-elements'
-import equal from 'fast-deep-equal'
+import { Button } from 'react-native-elements';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
-export class DBText extends React.Component {
+  export class DBText extends React.Component {
 
   constructor(props) {
     super(props);
@@ -16,6 +17,7 @@ export class DBText extends React.Component {
   }
 
   queryTable = (vQuery) => {
+    console.log(vQuery);
     fetch('http://mwn.improva.id:8084/gpsloc/reactnative/API.php', {
       method: 'POST',
       headers: {
@@ -50,7 +52,7 @@ export class DBText extends React.Component {
   }
 }
 
-export const HideableView = (props) => {
+  export const HideableView = (props) => {
     const { children, hide, style } = props;
     if (hide) {
       return null;
@@ -66,9 +68,9 @@ export const HideableView = (props) => {
 
     render() {
       const {children, style} = this.props;
-      let shadowSize=0;
+      let shadowSize=1;
       //#559932
-      const labeleLiving = <Text style={{color:'#606060', fontSize:14, fontWeight:'bold'}}>e<Text style={{color:'#808080', fontSize:12, fontWeight:'normal'}}>{this.props.label}</Text></Text>
+      const labeleLiving = <Text style={{color:'#b0b0b0', fontSize:14, fontWeight:'bold'}}>e<Text style={{color:'#909090', fontSize:12, fontWeight:'normal'}}>{this.props.label}</Text></Text>
       const labelStandard = <Text style={{color:this.props.darkMode?'#f8f8f8':'#808080', fontSize:12, fontWeight:'normal'}}>{this.props.label}</Text>
       const labelSmall = <Text style={{color:this.props.darkMode?'#f8f8f8':'#808080', fontSize:11, fontWeight:'normal'}}>{this.props.label}</Text>
 //      if(this.props.labelStyle=='small'){shadowSize=1}else{shadowSize=4}
@@ -85,6 +87,36 @@ export const HideableView = (props) => {
         </View>);
       }
   }  
+
+  export class ActionIconButton extends React.Component {
+
+    static defaultProps = {
+      backgroundColor : 'transparent',
+    }
+
+    render() {
+      const {children, style} = this.props;
+      let shadowSize=1;
+      return (
+        <View style={{height:45, justifyContent:'flex-start', alignItems:'flex-start', paddingRight:0, marginBottom:0, backgroundColor:'transparent'}}>
+          <TouchableOpacity onPress={this.props.onPress} style={{backgroundColor:'transparent', flexDirection:"column", justifyContent:'flex-start', alignItems:'center', }}> 
+            <Icon.Button style={{height:28, paddingTop:0, paddingLeft:20}}
+              name = {this.props.name}
+              color = {this.props.color}
+              backgroundColor = {this.props.backgroundColor}
+              borderColor={this.props.borderColor}
+              borderWidth={this.props.borderWidth}
+              onPress={this.props.onPress}
+            />
+            <View style={{backgroundColor:'transparent',  shadowColor: "black", shadowOffset: { height:shadowSize, width:shadowSize}, shadowRadius:shadowSize, shadowOpacity: 0.3}}> 
+              <Text style={{color:'#f0f0f0', paddingTop:-10, fontSize:12, fontWeight:'normal'}}>{this.props.label}</Text>
+            </View>
+          </TouchableOpacity>
+        </View>
+      )
+    }
+  }  
+
 
   export class DBViewList extends React.Component {
 
@@ -136,7 +168,8 @@ export const HideableView = (props) => {
 
     componentDidUpdate(prevProps, prevState){
         this._isMounted = true;
-        if(!equal(this.props.query, prevProps.query))
+        if(this.props.query!=prevProps.query)
+//        if(!equal(this.props.query, prevProps.query))
         {
           this.getTable();
         }         
@@ -160,24 +193,33 @@ export const HideableView = (props) => {
   export class DBFlatList extends React.Component {
 
     _isMounted = false ;
-    limit=10;
-    startID=0;
-    lastItem = [];
     hasScrolled= false;
     loading = false;
+    offset = 0;
+    thereIsMore = false;
+
 
     constructor(props) {
       super(props)
       this.state = {
         Data:[],
       };
+
     }
-        
+
+    static defaultProps = {
+      limit : 0,
+    }
+
     getTable(){
-//        console.log('gettable');
       var table=[];
-        let vquery = this.props.query;//+' WHERE ID>'+this.startID+' LIMIT '+this.limit;
-        console.log('query: '+vquery);
+      if(this.props.limit==0){
+        var vquery = this.props.query;
+      } else {
+        var vquery = this.props.query+' LIMIT '+this.props.limit+' OFFSET '+this.offset;
+      }
+//        console.log('query: '+vquery);
+      try{
         return fetch('http://mwn.improva.id:8084/gpsloc/reactnative/API.php', {
           method: 'POST',
           headers: {
@@ -193,51 +235,101 @@ export const HideableView = (props) => {
           if(vStr.indexOf('No Results Found')==-1){return response.json()}
         }).then((responseJson) => 
           {
-//            console.log('json: '+JSON.stringify(responseJson));
-            if(responseJson==undefined)
+            if(responseJson==undefined && this.offset==0)
             {
               if(this.props.onTableEmpty!=undefined){this.props.onTableEmpty()}
             }
+            else if(responseJson==undefined)
+            {
+              this.thereIsMore=false;
+            }
             else 
             {
-            if (responseJson.length>0){
-              for(let i=0;i<responseJson.length;i++){
+              if (responseJson.length>0){
+                for(let i=0;i<responseJson.length;i++){
                 table.push(responseJson[i]);
-                this.startID = responseJson[i].ID;
-                this.lastItem = responseJson[i];
+                if(this.props.limit>0 && responseJson.length==this.props.limit){
+                  this.thereIsMore=true
+                } else {
+                  this.thereIsMore=false;
+                }
               }
             }
           }
           if (this._isMounted) {
-            this.setState({Data: table});// this.state.Data.concat(table)})
+            if(this.offset==0)
+            {this.setState({Data: table})}
+            else {this.setState({Data: this.state.Data.concat(table)})};
+            this.offset = this.offset+this.props.limit;
           }
         }).catch((error) => {
           console.error(error);
         });
+      } catch (error) {
+        console.log(error);
+      }
     }
      
     
     componentDidMount(){
         this.getTable();
         this._isMounted = true;
-//        console.log(JSON.stringify(this.state.Data));
     }
 
     componentDidUpdate(prevProps, prevState){
         this._isMounted = true;
-        if(!equal(this.props.query, prevProps.query))
+//        if(!equal(this.props.query, prevProps.query))
+        if(this.props.query!=prevProps.query)
         {
             this.getTable();
         }         
     }
 
-    componentWillUnmount(){
-        this._isMounted = false;
+/*
+    static getDerivedStateFromProps(nextProps, prevState){
+      if(nextProps.someValue!==prevState.someValue){
+        return { someState: nextProps.someValue};
+     }
+     else return null;
+   }
+*/
+
+    componentWillReceiveProps(nextProps){
+      if(nextProps.query!==this.props.query){
+        this.offset = 0;
+        this.thereIsMore = false;
+      }
     }
 
-    onScroll = () => {
+    componentWillUnmount(){
+      this._isMounted = false;
+    }
+
+
+    renderFooter = () => {
+      if(!this.thereIsMore){
+        return null
+      } else {
+        return(
+          <View style={{height:90, flexDirection:"row", justifyContent:'center', alignItems:'center', marginBottom:2, marginLeft:4, marginRight:4, borderRadius:5, backgroundColor:'white'}}>
+            <Button buttonStyle={{height:40, width:100, alignItems:'center', backgroundColor:'mediumseagreen'}}
+              raised
+              onPress={()=> this.getTable()}
+              title="Load More"
+              borderRadius={5}
+              color="#841584"
+            />                
+          </View>   
+        )}
+      }
+
+    onScroll=(event)=> {
       this.hasScrolled= true;
-//      console.log('onscroll')
+      console.log(JSON.stringify(event.nativeEvent.contentOffset.y));
+ //     if (event.contentOffset.y === 0) {
+ //       console.log('magic')
+ //     }
+      console.log('onscroll')
      }
 
     loadMore(){
@@ -260,7 +352,10 @@ export const HideableView = (props) => {
             renderItem={({item}) => this.props.onRenderItem(item)}
             keyExtractor={(item,index) => item.ID}
             onEndReachedThreshold={0}
-            onScroll={this.onScroll}
+            onScroll={this.props.onScroll}
+            ListFooterComponent={this.renderFooter}
+            scrollEventThrottle={0}
+            animated = {true}
           />  
         </View>
       );
@@ -339,7 +434,8 @@ export const HideableView = (props) => {
 
     componentDidUpdate(prevProps, prevState){
         this._isMounted = true;
-        if(!equal(this.props.query, prevProps.query))
+//        if(!equal(this.props.query, prevProps.query))
+        if(this.props.query!=prevProps.query)
         {
             this.getTable();
         }         
@@ -456,7 +552,7 @@ export const HideableView = (props) => {
     }
   }
 
-export class Spinner extends React.Component {
+  export class Spinner extends React.Component {
 
   constructor(props) {
     super(props);
@@ -572,7 +668,14 @@ export class Spinner extends React.Component {
       </View>
     )
   }
-}
+  }
+
+
+  export const SetFocus = (props) => {
+    const {focusref} = props;
+    props.focusref.focus()
+      return null;
+  };
 
 const styles = StyleSheet.create({
   container: {
@@ -604,3 +707,4 @@ const styles = StyleSheet.create({
     textAlign: 'center'
   }
 })
+

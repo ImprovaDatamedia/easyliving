@@ -22,12 +22,10 @@ import {HideableView} from "../components/HideableView.js"
 import {Kohana} from 'react-native-textinput-effects';
 import MaterialsIcon from 'react-native-vector-icons/MaterialIcons';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import {HomeIconButton, DBFlatList, DBViewList,TextOfMySQLDate, ImageAlter} from '../components/react-native-improva.js';
+import {ActionIconButton, DBFlatList, DBViewList,TextOfMySQLDate, ImageAlter, RupiahFormat} from '../components/react-native-improva.js';
 
 
 export default class EasyRentScreen extends React.Component {
-  
-  cariText ='cari...';
 
   static navigationOptions = ({ navigation }) => {
     return{
@@ -56,13 +54,9 @@ handler() {
   cariBarang=()=>{
     this.setState({hideCari: true});
     this.props.navigation.setParams({kategoriID: 0});
-    this.props.navigation.setParams({cariBarang: this.cariText});
+    this.props.navigation.setParams({cariBarang: this.refs.cariText._lastNativeText});
   }   
- 
-
-  cariChangeText=(text)=>{
-    this.cariText = text;
-  }   
+   
 
   showEasyRentKategoriScreen=()=>{
     //    this.setState({isKategoriModalVisible:!this.state.isKategoriModalVisible})
@@ -102,7 +96,7 @@ handler() {
             {dataJson.Deskripsi}
           </Text>
           <Text  style={{color:'darkmagenta', textAlign:'left', textAlignVertical:'center', fontSize:14, fontWeight:'normal', backgroundColor: 'transparent'}}>
-            {'Rp. '+dataJson.Harga+' per'+dataJson.Waktu+minWaktuSewa+maxWaktuSewa}
+            {RupiahFormat(dataJson.Harga)+' per'+dataJson.Waktu+minWaktuSewa+maxWaktuSewa}
           </Text>
         </View>
       </View>   
@@ -130,11 +124,12 @@ handler() {
   render() {
     let lebar =  Dimensions.get('window').width; 
     const {navigation} = this.props;
+    vWhere = '';
     if(navigation.getParam('kategoriID', 0)!=0){
-      vWhere='WHERE KategoriID='+navigation.getParam('kategoriID', 'ID')+';'
+      vWhere='WHERE KategoriID='+navigation.getParam('kategoriID', 0)
     } else if(navigation.getParam('cariBarang', '')!=''){
-      vWhere = 'WHERE NamaBarang LIKE "%'+navigation.getParam('cariBarang', '')+'%";'
-    } else {vWhere=';'}
+      vWhere = 'WHERE NamaBarang LIKE "%'+navigation.getParam('cariBarang', '')+'%"'
+    }
     console.log(vWhere);
     return (
       <View style={{flex:1,  backgroundColor: 'white'}}>
@@ -142,30 +137,32 @@ handler() {
           <Image style={{borderRadius:0, width:lebar, height: lebar*(1/2.5), resizeMode: 'stretch'}} 
           source={{uri:'https://www.easyliving.id/images/rent/bukalapak.jpg'}}/>
         </View>
-        <View style={{justifyContent: 'space-around', flexDirection:"row", height:50, paddingTop:5, alignItems:'center',  backgroundColor:'#8c6f5c'}}>
-          <HomeIconButton onPress={this.showEasyRentKategoriScreen} imageSource={require('../assets/icons/Kategori.png')} label='Kategori' labelStyle='small' darkMode={true} style={{width:70, height:45}}/>
-          <HomeIconButton onPress={()=> this.setState({hideCari: !this.state.hideCari})} imageSource={require('../assets/icons/Search.png')} label='Cari' labelStyle='small' darkMode={true} style={{width:70, height:45}}/>
-          <HomeIconButton onPress={this.showKetentuan} imageSource={require('../assets/icons/Ketentuan.png')} label='Ketentuan' labelStyle='small' darkMode={true} style={{width:70, height:45}}/>
-          <HomeIconButton onPress={this.showEasyRentPasangScreen} imageSource={require('../assets/icons/Plus.png')} label='Pasang Iklan' labelStyle='small' darkMode={true} style={{width:70, height:45}}/>
+        <View style={{justifyContent: 'space-around', flexDirection:"row", height:50, paddingTop:5, alignItems:'center',  backgroundColor:'#4a485f'}}>
+          <ActionIconButton onPress={this.showEasyRentKategoriScreen} name="list" label='Kategori'/>
+          <ActionIconButton onPress={()=> this.setState({hideCari: !this.state.hideCari})} name="search" label='Cari'/>
+          <ActionIconButton onPress={this.showKetentuan} name="list-alt" label='Ketentuan'/>
+          <ActionIconButton onPress={this.showEasyRentPasangScreen} name="plus" label='Pasang Iklan'/>
         </View>
-        <HideableView hide={this.state.hideCari} style={{flexDirection:"row", height:55, alignItems:'center', backgroundColor:'#8c6f5c'}}>
+        <HideableView hide={this.state.hideCari} style={{flexDirection:"row", height:55, alignItems:'center', backgroundColor:'#514e65'}}>
             <TextInput style={{marginLeft: 10, marginRight:10, marginTop:0, borderRadius:5, height: 40, width:lebar-80,  paddingLeft:5, borderColor: '#b2b2b2', borderWidth: 1, backgroundColor:'#FFFCF4'}}
               underlineColorAndroid = "transparent"
+              ref = "cariText"
+              autoFocus = {true}
               autoCapitalize = "none"
-              onChangeText = {this.cariChangeText}
               onSubmitEditing = {this.cariBarang}
             />
             <Icon.Button style={{height:40, paddingLeft:18, marginTop:0, paddingTop:7}}
               name="search"
-              backgroundColor="#0c4e84"//</View>#3b5998"
+              backgroundColor="#3a384f"//</View>#3b5998"
               onPress={this.cariBarang}
-            ></Icon.Button>
+            />
         </HideableView>
 
         <DBFlatList style={{flex:1, paddingTop:2, paddingLeft:0, paddingRight:0, backgroundColor:'#f0f0f0'}}
           query = {'SELECT * FROM tbeasyrent '+vWhere} 
           onRenderItem = {this.drawRow}
           onTableEmpty = {() => {Alert.alert('eLiving','No item available in this category')}}
+          limit = {10}
         />
       </View>   
     );
