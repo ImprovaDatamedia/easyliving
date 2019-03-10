@@ -15,7 +15,10 @@ import {
 export default class EasyServiceScreen extends React.Component {
   static navigationOptions = {
     title: 'Easy Service',
+    headerStyle: {backgroundColor: '#e7e9df'},
   };
+
+
   render() {
     let lebar =  Dimensions.get('window').width; 
     return (

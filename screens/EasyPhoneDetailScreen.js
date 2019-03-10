@@ -24,7 +24,7 @@ import ImageLabelButton from "../components/ImageLabelButton.js";
 import Communications from "react-native-communications"
 
 //import HideableView from "../components/HideableView.js"
-import {DBText} from "../components/react-native-improva.js"
+import {DBText, ActionIconButton, updateTable} from "../components/react-native-improva.js"
 
 
 
@@ -37,7 +37,9 @@ export default class EasyPhoneDetailScreen extends React.Component {
   
   static navigationOptions = ({ navigation }) => {
     return{
-      title: "Phone Detail"
+      title: "Contact Detail",
+      headerStyle: {backgroundColor: '#e7e9df'},
+
     };
   };
 
@@ -51,21 +53,35 @@ export default class EasyPhoneDetailScreen extends React.Component {
   }
 
 
-  askDeletePhone=()=>{
+  askDeleteContact=()=>{
     Alert.alert(
       'Konfirmasi',
-      'Setuju untuk mengahapus nomor telephone ini?',
+      'Setuju untuk mengahapus nomor Contact ini?',
       [
         {
           text: 'Cancel',
           onPress: () => console.log('Cancel Pressed'),
           style: 'cancel',
         },
-        {text: 'OK', onPress: () => console.log('OK Pressed')},
+        {text: 'OK', onPress:() => this.deleteItem()},
       ],
       {cancelable: false},
     );    
   }   
+
+
+
+  deleteItem=()=>{
+    let param = this.props.navigation.getParam('Data', []);
+    let whereQuery = this.props.navigation.getParam('whereQuery',''); 
+    query = "DELETE FROM easyliving.tbphone WHERE ID="+param.ID;
+    if(updateTable(query))
+    {
+      alert('Contact berhasil dihapus');
+      console.log('whereQuery: '+whereQuery)
+      this.props.navigation.navigate('EasyPhoneNumber',{whereQuery:whereQuery})
+    }else{alert('Gagal')};
+  }
 
 
   render() {
@@ -79,25 +95,14 @@ export default class EasyPhoneDetailScreen extends React.Component {
     vQueryEditBy = dataJson.EditBy!=null?'SELECT Nama AS Value FROM tbuser WHERE ID='+dataJson.EditBy+';':'';
     return (
       <View style={{flex:1, marginBottom:10, backgroundColor: 'white'}}>
-        <View style={{justifyContent: 'flex-end', paddingTop:10, paddingRight:20, flexDirection:"row", height:70, alignItems:'center',  backgroundColor:'white'}}>
-            <View style={{width:60, height:50, backgroundColor:'transparent'}}>
-              <TouchableOpacity onPress={this.showEasyRentKategoriScreen} style={{flexDirection:"column", justifyContent:'flex-start', alignItems:'center'}}>
-                <Image source={require('../assets/icons/Edit.png')} style={{width:32, height:32, shadowColor: "black", shadowOffset: { height:1, width:1}, shadowRadius:2, shadowOpacity: 0.2}}/>
-                  <Text style={{color:'gray', marginTop:5, textAlign:'center', textAlignVertical:'bottom', fontSize:12, backgroundColor: 'transparent'}}>
-                    Edit
-                  </Text>
-              </TouchableOpacity>
-            </View>
-            <View style={{width:20}}/>
-            <View style={{width:60, height:50, backgroundColor:'transparent'}}>
-              <TouchableOpacity onPress={this.askDeletePhone} style={{flexDirection:"column", justifyContent:'flex-start', alignItems:'center'}}>
-                <Image source={require('../assets/icons/Minus.png')} style={{width:32, height:32, shadowColor: "black", shadowOffset: { height:1, width:1}, shadowRadius:2, shadowOpacity: 0.3}}/>
-                  <Text style={{color:'gray', marginTop:5, textAlign:'center', textAlignVertical:'bottom', fontSize:12, backgroundColor: 'transparent'}}>
-                    Hapus
-                  </Text>
-              </TouchableOpacity>
-            </View>
+         <View style={{justifyContent: 'space-around', flexDirection:"row", height:60, paddingTop:5, alignItems:'center',  backgroundColor:'#4a485f'}}>
+          <ActionIconButton name="blank"/>
+          <ActionIconButton name="blank"/>
+          <ActionIconButton name="blank"/>
+          <ActionIconButton onPress={this.showKetentuan} name="edit" label='Edit'/>
+          <ActionIconButton onPress={this.askDeleteContact} name="trash-o" label='Delete'/>
         </View>
+        <View style={{width:lebar, height:3, backgroundColor:'lightgray'}}/>
 
         <ScrollView style={{marginLeft:0, backgroundColor:'#f8f8f8'}}>
           <View style={{height:20}}/>

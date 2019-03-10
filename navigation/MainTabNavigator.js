@@ -1,6 +1,6 @@
 import React from 'react';
-import {createAppContainer, createStackNavigator, createBottomTabNavigator } from 'react-navigation';
 import { Platform } from 'react-native';
+import { createStackNavigator, createSwitchNavigator, createBottomTabNavigator } from 'react-navigation';
 import { Avatar, Badge, Icon, withBadge } from 'react-native-elements'
 
 import TabBarIcon from '../components/TabBarIcon';
@@ -33,6 +33,8 @@ import EasyAdminLocScreen from '../screens/EasyAdminLocScreen';
 import EasyPhoneAddScreen from '../screens/EasyPhoneAddScreen';
 import EasyWebBrowserScreen from '../screens/EasyWebBrowserScreen';
 import EasyMartBarangDetailScreen from '../screens/EasyMartBarangDetail';
+import EasyMartKeranjangScreen from '../screens/EasyMartKeranjangScreen';
+import FormLogin from '../screens/LoginScreen';
 
 
 
@@ -62,6 +64,7 @@ const HomeStack = createStackNavigator({
   EasyPhoneAdd : EasyPhoneAddScreen,
   EasyWebBrowser : EasyWebBrowserScreen,
   EasyMartBarangDetail : EasyMartBarangDetailScreen,
+  EasyMartKeranjang : EasyMartKeranjangScreen,
 });
 
 
@@ -96,15 +99,13 @@ const InboxStack = createStackNavigator({
   Inbox: InboxScreen,
 });
 
-const BadgedIcon = withBadge(0, { status: "success", left: 25 })(Icon)
-
 InboxStack.navigationOptions = {
   tabBarLabel: 'Inbox',
   tabBarIcon: ({ focused }) => (
-    <BadgedIcon 
-      type="ionicon" 
-      color={focused==true? "#5c93d8":"#cbcbcb"} 
-      name={Platform.OS === 'ios' ? 'ios-mail' : 'md-mail'} />
+    <TabBarIcon
+      focused={focused}
+      name={Platform.OS === 'ios' ? 'ios-mail' : 'md-mail'}
+    />
   ),
 };
 
@@ -115,6 +116,7 @@ const ContactUsStack = createStackNavigator({
 
 ContactUsStack.navigationOptions = {
   tabBarLabel: 'Contact Us',
+
   tabBarIcon: ({ focused }) => (
     <TabBarIcon
       focused={focused}
@@ -124,12 +126,14 @@ ContactUsStack.navigationOptions = {
 };
 
 
-const AccountStack = createStackNavigator({
+const AccountStack = createSwitchNavigator({
   Account: AccountScreen,
+  loginForm: FormLogin
 });
 
 AccountStack.navigationOptions = {
   tabBarLabel: 'Account',
+  header : null,
   tabBarIcon: ({ focused }) => (
     <TabBarIcon
       focused={focused}
@@ -145,12 +149,13 @@ export default createBottomTabNavigator({
   InboxStack,
   ContactUsStack,
   AccountStack,
-},{ 
+},{
   tabBarOptions: {
-      showLabel: true, 
+      showLabel: true,
       activeTintColor: 'black', // active icon color
       inactiveTintColor: 'darkgray',  // inactive icon color
       style: {
           backgroundColor: 'cornsilk'//'linen' // TabBar background
       }
   }});
+

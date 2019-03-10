@@ -12,7 +12,7 @@ import {
   Dimensions,
   Alert,
 } from 'react-native';
-import {HomeIconButton, DBFlatList, Spinner, ImageAlter, DisplayHarga, DBViewList,TextOfMySQLDate} from '../components/react-native-improva.js';
+import {HomeIconButton, updateTable, Spinner, ImageAlter, DisplayHarga, DBViewList,TextOfMySQLDate} from '../components/react-native-improva.js';
 import { Button } from 'react-native-elements';
 
 export default class EasyMartBarangDetailScreen extends React.Component {
@@ -25,7 +25,10 @@ export default class EasyMartBarangDetailScreen extends React.Component {
 
 
 beliBarang=()=>{
+  console.log('beli barang')
   let item = this.props.navigation.getParam('Data', []); 
+  let query = "INSERT INTO easyliving.tbbelanjadetail (BarangID, Jumlah, Harga) VALUES ('"+item.ID+"', '"+this.Qty+"', '"+item.Harga+"');"
+   updateTable(query);
   Alert.alert('eMart',item.Nama+' sebanyak '+this.Qty+' buah ditambahkan ke keranjang anda')
 }  
 
@@ -64,7 +67,7 @@ beliBarang=()=>{
               <View style={{width:30}}/>
               <Button buttonStyle={{height:40, width:100, alignItems:'flex-end', backgroundColor:'mediumseagreen'}}
                 raised
-                onPress={()=> Alert.alert('eMart', item.Nama+' sebanyak '+this.Qty+' buah ditambahkan ke keranjang anda')}
+                onPress={()=> this.beliBarang()}
                 title="Beli"
                 borderRadius={5}
                 color="#841584"

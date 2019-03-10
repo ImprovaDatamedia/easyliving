@@ -1,5 +1,5 @@
 import React from 'react';
-import { ScrollView, StyleSheet } from 'react-native';
+import { ScrollView, View, Text, StyleSheet } from 'react-native';
 import { ExpoLinksView } from '@expo/samples';
 
 export default class ContactUsScreen extends React.Component {
@@ -9,11 +9,12 @@ export default class ContactUsScreen extends React.Component {
 
   render() {
     return (
-      <ScrollView style={styles.container}>
-        {/* Go ahead and delete ExpoLinksView and replace it with your
-           * content, we just wanted to provide you with some helpful links */}
-        <ExpoLinksView />
-      </ScrollView>
+      <View style={{flex:1, paddingLeft:10, paddingTop:10, paddingBottom:10, paddingRight:10, borderRadius:0, backgroundColor:'#fcfcfc'}}>
+        <Text style={{color:'gray', marginTop:5, textAlign:'center', textAlignVertical:'top', fontSize:20, fontWeight:'bold', backgroundColor: 'transparent'}}>
+          This page will contain information about how to reach us, and how to get help from us
+        </Text>
+      </View>
+
     );
   }
 }

@@ -27,9 +27,14 @@ import {ActionIconButton, DBFlatList, DBViewList,TextOfMySQLDate, ImageAlter, Ru
 
 export default class EasyRentScreen extends React.Component {
 
+  whereQuery = '';
+
   static navigationOptions = ({ navigation }) => {
     return{
-      title: "Easy Rent"
+      title: "Easy Rent",
+      headerStyle: {backgroundColor: '#e7e9df'},
+
+
     };
   };
 
@@ -46,10 +51,12 @@ export default class EasyRentScreen extends React.Component {
 
 
 handler() {
-    this.setState({
-      kategoriID : this.props.navigation.state.params.kategoriID
-    })
+    console.log('handler');
+//    this.setState({
+//      kategoriID : this.props.navigation.state.params.kategoriID
+//    })
   }
+
 
   cariBarang=()=>{
     this.setState({hideCari: true});
@@ -59,9 +66,8 @@ handler() {
    
 
   showEasyRentKategoriScreen=()=>{
-    //    this.setState({isKategoriModalVisible:!this.state.isKategoriModalVisible})
-        this.props.navigation.navigate("EasyRentKategori", {callerScreen:"EasyRent"});
-      }   
+    this.props.navigation.navigate("EasyRentKategori", {callerScreen:"EasyRent"});
+  }   
     
   showKetentuan=()=>{
     var moment = require('moment');
@@ -70,10 +76,10 @@ handler() {
     this.props.navigation.navigate("EasyRentPasang");
   }   
     
-    
-
+  
   showRentDetailScreen=(dataJson)=>{
-    this.props.navigation.navigate("EasyRentDetail", {Data:dataJson});
+    console.log('pass wq: '+this.whereQuery);
+    this.props.navigation.navigate("EasyRentDetail", {Data:dataJson, whereQuery:this.whereQuery});
   }   
 
   showEasyRentPasangScreen=()=>{
@@ -87,7 +93,7 @@ handler() {
     return(
       <TouchableOpacity onPress={()=>this.showRentDetailScreen(dataJson)}>
       <View key={dataJson.ID} style={{flex:1, flexDirection:"row", alignItems:'flex-start', marginBottom:8, marginLeft:7, marginRight:7, borderRadius:5, backgroundColor:'white'}}>
-        <Image source={{uri: 'https://www.easyliving.id/app/assets/image/'+dataJson.Gambar}} style={{marginTop:10, marginLeft:10, width:80, height:80, resizeMode: 'stretch'}}/>
+        <Image source={{uri: 'https://www.easyliving.id/app/assets/image/'+dataJson.Gambar}} style={{marginTop:5, marginBottom:5, marginLeft:5, width:80, height:80, borderRadius:5, resizeMode: 'stretch'}}/>
         <View style={{flex:1, alignItems:'flex-start', paddingTop:10, paddingBottom:10, marginLeft:10, marginRight:7, borderRadius:5, backgroundColor:'white'}}>
           <Text  style={{color:'gray', textAlign:'left', textAlignVertical:'bottom', fontSize:16, fontWeight:'bold', backgroundColor: 'transparent'}}>
               {dataJson.NamaBarang}
@@ -104,6 +110,7 @@ handler() {
     )
   }
 
+
   sayEmpty = () => {
     return(
       <View key='1' style={{flex:1, alignItems:'center', marginTop:28, marginLeft:7, marginRight:7, borderRadius:5, backgroundColor:'transparent'}}>
@@ -114,30 +121,53 @@ handler() {
     )
   }
 
-
+/*
   selectKategori=(kategoriID, kategoriNama)=>{
     this.setState({kategoriID:kategoriID});
     this.setState({kategoriNama:kategoriNama});
     this.setState({isKategoriModalVisible:false});
   }   
+*/
+
+  componentDidMount(){
+//    this._componentFocused();
+    this._sub = this.props.navigation.addListener(
+      'didFocus',
+      this._componentFocused
+    );
+  }
+ 
+  componentWillUnmount() {
+    this._sub.remove();
+  }
+  
+  _componentFocused = () => {
+    console.log('getfocused')
+    this.forceUpdate();
+  }
+
+  componentDidUpdate(prevProps, prevState){
+  }
 
   render() {
     let lebar =  Dimensions.get('window').width; 
     const {navigation} = this.props;
-    vWhere = '';
-    if(navigation.getParam('kategoriID', 0)!=0){
-      vWhere='WHERE KategoriID='+navigation.getParam('kategoriID', 0)
+    this.whereQuery = '';
+    if(navigation.getParam('whereQuery',undefined)!=undefined){
+      this.whereQuery = navigation.getParam('whereQuery', '')
+    } else if(navigation.getParam('kategoriID', 0)!=0){
+      this.whereQuery = 'WHERE KategoriID='+navigation.getParam('kategoriID', 0)
     } else if(navigation.getParam('cariBarang', '')!=''){
-      vWhere = 'WHERE NamaBarang LIKE "%'+navigation.getParam('cariBarang', '')+'%"'
+      this.whereQuery = 'WHERE NamaBarang LIKE "%'+navigation.getParam('cariBarang', '')+'%"'
     }
-    console.log(vWhere);
+    console.log('whereq: '+this.whereQuery);    
     return (
       <View style={{flex:1,  backgroundColor: 'white'}}>
         <View style={{alignItems:'center', marginTop:0, marginBottom:0, marginLeft:0, marginRight:0, paddingTop:0, paddingBottom:0, backgroundColor:'white'}}>
           <Image style={{borderRadius:0, width:lebar, height: lebar*(1/2.5), resizeMode: 'stretch'}} 
-          source={{uri:'https://www.easyliving.id/images/rent/bukalapak.jpg'}}/>
+          source={{uri:'https://www.easyliving.id/images/rent/eRentalHead.png'}}/>
         </View>
-        <View style={{justifyContent: 'space-around', flexDirection:"row", height:50, paddingTop:5, alignItems:'center',  backgroundColor:'#4a485f'}}>
+        <View style={{justifyContent: 'space-around', flexDirection:"row", height:60, paddingTop:5, alignItems:'center',  backgroundColor:'#4a485f'}}>
           <ActionIconButton onPress={this.showEasyRentKategoriScreen} name="list" label='Kategori'/>
           <ActionIconButton onPress={()=> this.setState({hideCari: !this.state.hideCari})} name="search" label='Cari'/>
           <ActionIconButton onPress={this.showKetentuan} name="list-alt" label='Ketentuan'/>
@@ -157,9 +187,10 @@ handler() {
               onPress={this.cariBarang}
             />
         </HideableView>
+        <View style={{width:lebar, height:3, backgroundColor:'lightgray'}}/>
 
         <DBFlatList style={{flex:1, paddingTop:2, paddingLeft:0, paddingRight:0, backgroundColor:'#f0f0f0'}}
-          query = {'SELECT * FROM tbeasyrent '+vWhere} 
+          query = {'SELECT * FROM easyliving.tbeasyrent '+this.whereQuery}  
           onRenderItem = {this.drawRow}
           onTableEmpty = {() => {Alert.alert('eLiving','No item available in this category')}}
           limit = {10}

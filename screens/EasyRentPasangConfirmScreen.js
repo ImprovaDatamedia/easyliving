@@ -23,6 +23,7 @@ import MaterialsIcon from 'react-native-vector-icons/MaterialIcons';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { Button } from 'react-native-elements';
 import { ImageManipulator } from 'expo';
+import {updateTable} from '../components/react-native-improva.js';
 
 
 export default class EasyRentPasangConfirmScreen extends React.Component {
@@ -38,15 +39,26 @@ export default class EasyRentPasangConfirmScreen extends React.Component {
 
   confirmPasang=()=>{
     // const {params} = this.props.navigation.state;  
-    this.uploadImage();
-//    this.putTable(params);
+    const {params} = this.props.navigation.state;  
+    if(this.uploadImage())
+    {
+      var UserID=1;
+      var moment = require('moment');
+      var Tanggal = moment(new Date()).format("YYYY-MM-DD HH:mm:ss");
+      var query = "INSERT INTO easyliving.tbeasyrent (UserID, Tanggal, NamaBarang, KategoriID, Deskripsi, Harga, Waktu, MinWaktu, MaxWaktu, Gambar) VALUES ('"+UserID+"', '"+Tanggal+"', '"+params.NamaBarang+"', '"+params.Kategori+"', '"+params.Deskripsi+"', '"+params.TarifSewa+"', '"+params.SatuanWaktu+"', '"+params.MinWaktu+"', '"+params.MaxWaktu+"', '"+params.ImgFilename1+"');"
+      if(updateTable(query)){Alert.alert('Sucess','Iklan berhasil dipasang')}else{Alert.alert('Error','Iklan gagal dipasang')}
+    }
+      else
+    {
+      alert('Upload gambar gagal')
+    };
   }
 
   putTable = (params) => {
     var UserID=1;
     var moment = require('moment');
     var Tanggal = moment(new Date()).format("YYYY-MM-DD HH:mm:ss");
-    var vQuery = "INSERT INTO easyliving.tbeasyrent (UserID, Tanggal, NamaBarang, KategoriID, Deskripsi, Harga, Waktu, MinWaktu, MaxWaktu, Gambar) VALUES ('"+UserID+"', '"+Tanggal+"', '"+params.NamaBarang+"', '"+params.Kategori+"', '"+params.Deskripsi+"', '"+params.TarifSewa+"', '"+params.SatuanWaktu+"', '"+params.MinWaktu+"', '"+params.MaxWaktu+"', '"+params.Imguri1+"');"
+    var vQuery = "INSERT INTO easyliving.tbeasyrent (UserID, Tanggal, NamaBarang, KategoriID, Deskripsi, Harga, Waktu, MinWaktu, MaxWaktu, Gambar) VALUES ('"+UserID+"', '"+Tanggal+"', '"+params.NamaBarang+"', '"+params.Kategori+"', '"+params.Deskripsi+"', '"+params.TarifSewa+"', '"+params.SatuanWaktu+"', '"+params.MinWaktu+"', '"+params.MaxWaktu+"', '"+params.ImgFilename1+"');"
     this.uploadImage();
     return fetch('http://mwn.improva.id:8084/gpsloc/reactnative/API.php', {
       method: 'POST',
@@ -76,18 +88,13 @@ export default class EasyRentPasangConfirmScreen extends React.Component {
     console.log('upload');
     const {params} = this.props.navigation.state;  
     let formData = new FormData();
-//    const manipResult = await ImageManipulator.manipulateAsync(
- //    this.props.Imguri1,
-//      [{ resize: { width: 640, height: 480 } }],
-//      { format: 'jpg' }
-//    );
- 
+
     formData.append('photo', {
      uri : params.Imguri1,
      name: params.ImgFilename1,
      type : 'image/jpg',
     });
-    fetch('http://www.easyliving.id/app/index.php/datalogin/uploadImage', {
+    return fetch('http://www.easyliving.id:81/app/index.php/datalogin/uploadImage', {
       headers: {
         Accept: 'application/json',
         'Content-Type': 'multipart/form-data',
@@ -96,7 +103,7 @@ export default class EasyRentPasangConfirmScreen extends React.Component {
       body: formData
     }).then((response) => response.json()
     ).then((responseJson) => {
-        Alert.alert(responseJson['deskripsi']);
+      if(responseJson['deskripsi']='Data berhasil di simpan'){return true}else{return false}
     }).catch((error) => {
       console.error(error);
     });
@@ -128,7 +135,7 @@ export default class EasyRentPasangConfirmScreen extends React.Component {
 
 
   render() {
-    let lebar =  Dimensions.get('window').width; 
+    let lebar =  Dimensions.get('window').width;
     return(
       <View style={{flex:1, flexDirection:"column", alignItems:'center', backgroundColor:'#f8f8f8'}}>
         <View style={{height:100, width:lebar, paddingTop:40, marginBottom:10, backgroundColor:'white'}}>    

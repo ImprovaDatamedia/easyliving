@@ -5,7 +5,7 @@ import {ExpoConfigView } from '@expo/samples';
 import {View,Text} from 'react-native';
 import { SketchPicker } from 'react-color';
 
-export class DBText extends React.Component {
+export class DBText123 extends React.Component {
 
   constructor(props) {
     super(props);

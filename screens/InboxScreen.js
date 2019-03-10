@@ -12,26 +12,17 @@ import {
 
 export default class InboxScreen extends React.Component {
   static navigationOptions = {
-    title: 'Inbox Screen',
+    title: 'Inbox',
   };
 
   render() {
     return (
-      <View style={styles.container}>
-        <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-          <View style={styles.welcomeContainer}>
-            <Text>
-            Test 123
-            </Text>
-            <Image
-              source={
-                  require('../assets/images/robot-prod.png')
-              }
-              style={styles.welcomeImage}
-            />
-          </View>    
-        </ScrollView>
+      <View style={{flex:1, paddingLeft:10, paddingTop:10, paddingBottom:10, paddingRight:10, borderRadius:0, backgroundColor:'#fcfcfc'}}>
+        <Text style={{color:'gray', marginTop:5, textAlign:'center', textAlignVertical:'top', fontSize:20, fontWeight:'bold', backgroundColor: 'transparent'}}>
+          This your inbox. Any messages from other user or Admin will be shown here. you can also replied to the message.
+        </Text>
       </View>
+
     );
   }
 }

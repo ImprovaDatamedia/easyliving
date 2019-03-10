@@ -71,10 +71,7 @@ export default class EasyRentPasangScreen extends React.Component {
       </View>   
     )
   }
-
-  inputChangeText=(text,InputID)=>{
-    this.cariText = text;
-  }   
+  
 
   selectPhoto=()=>{
     Alert.alert(
@@ -126,14 +123,20 @@ export default class EasyRentPasangScreen extends React.Component {
 
 
   submitIklan=()=> {
+    if(this.refs.NamaBarang._lastNativeText=='' || this.refs.NamaBarang._lastNativeText==undefined){Alert.alert('Error','Harap isi nama barang'); return false}
+    if(this.state.kategoriID==0){Alert.alert('Error','Harap pilih kategori'); return false}
+    if(this.refs.Deskripsi._lastNativeText=='' || this.refs.Deskripsi._lastNativeText==undefined){Alert.alert('Error','Harap isi desktipsi'); return false}
+    if(this.refs.TarifSewa._lastNativeText=='' || this.refs.TarifSewa._lastNativeText==undefined){Alert.alert('Error','Harap isi tarif sewa'); return false}
+    if(this.refs.SatuanWaktu.selectedIndex()==-1){Alert.alert('Error','Harap isi satuan waktu'); return false}
+    if(this.state.Imguri1==''){Alert.alert('Error','Gambar blm ada'); return false}
     this.props.navigation.navigate("EasyRentPasangConfirm",{
       NamaBarang: this.refs.NamaBarang._lastNativeText, 
       Kategori: this.state.kategoriID, 
       Deskripsi: this.refs.Deskripsi._lastNativeText, 
       TarifSewa: this.refs.TarifSewa._lastNativeText, 
       SatuanWaktu: namaWaktu[this.refs.SatuanWaktu.selectedIndex()], 
-      MinWaktu: this.refs.MinWaktu._lastNativeText, 
-      MaxWaktu: this.refs.MaxWaktu._lastNativeText, 
+      MinWaktu: this.refs.MinWaktu._lastNativeText!=undefined?this.refs.MinWaktu._lastNativeText:'1', 
+      MaxWaktu: this.refs.MaxWaktu._lastNativeText!=undefined?this.refs.MaxWaktu._lastNativeText:'0', 
       Gambar: '2016/05/Bor-Maktec-MT60.jpg',
       Imguri1 : this.state.Imguri1,
       ImgFilename1: this.state.ImgFileName1})
@@ -152,7 +155,7 @@ export default class EasyRentPasangScreen extends React.Component {
   writeKategori=(kategoriID, kategoriNama)=>{
       return(
         <View style={{flex:1, flexDirection:'row', justifyContent:'flex-start'}}>
-        <Text  style={{color:'#a3a3a3', width:80, height:50, paddingTop:22, fontSize:14, backgroundColor: 'transparent'}}>
+        <Text  style={{color:'#606060', width:80, height:50, paddingTop:22, fontSize:14, backgroundColor: 'transparent'}}>
           Kategori
         </Text>
         <Text  style={{color:'black', width:lebar-170, height:50, paddingTop:20, textAlign:'left',  marginLeft:0, paddingLeft:0, fontSize:16, backgroundColor: 'transparent'}}>
@@ -165,9 +168,37 @@ export default class EasyRentPasangScreen extends React.Component {
       )
     }
   
+  componentDidMount(){
+    //    this._componentFocused();
+    this._sub = this.props.navigation.addListener(
+      'didFocus',
+      this._componentFocused
+    );
+  }
+       
+  componentWillUnmount() {
+    this._sub.remove();
+  }
+        
+  _componentFocused = () => {
+    let param = this.props.navigation.getParam('Data', []); 
+    if(param!=[]){
+      Imguri1 = param.Imguri1;
+      ImgFileName1 = param.ImgFileName1;
+      this.setState({Imguri1 : param.Imguri1,
+                     ImgFileName1 : param.ImgFileName1,
+                     srcImg : {uri : param.Imguri1}, 
+                     kategoriID : param.KategoriID,
+                     kategoriNama : param.KategoriNama}
+                     );
+    }
+//          this.forceUpdate();
+  }  
+
 
   render() {
     let lebar =  Dimensions.get('window').width; 
+    let param = this.props.navigation.getParam('Data', []); 
     let arrSatuanWaktu = [{value:'perjam'},{value:'perhari'},{value:'perminggu'},{value:'perbulan'}];
     return (
       <View style={{flex:1,  backgroundColor: 'white'}}>
@@ -183,10 +214,9 @@ export default class EasyRentPasangScreen extends React.Component {
             Nama Barang</Text>
           <TextInput style={styles.textinputsingleline}
               ref="NamaBarang"
+              value = {param!=[]?param.NamaBarang:''}
               underlineColorAndroid="transparent"
-              onChangeText = {(text) => { this.inputChangeText(text, 'NamaBarang');}}
-              onChangeText={this.cariChangeText}
-              onSubmitEditing={this.cariBarang}
+              autoCapitalize="true"
             />
             <Modal 
               style={{margin:10, borderRadius:5}} 
@@ -210,10 +240,9 @@ export default class EasyRentPasangScreen extends React.Component {
             <TextInput style={styles.textinputmultiline}
               ref="Deskripsi"
               underlineColorAndroid="transparent"
-              autoCapitalize="none"
+              value = {param!=[]?param.Deskripsi:''}
+              autoCapitalize="true"
               multiline={true}
-              onChangeText={this.cariChangeText}
-              onSubmitEditing={this.cariBarang}
             />
             <View style={{flexDirection:'row'}}>
             <View style={{flexDirection:'column'}}>
@@ -224,8 +253,6 @@ export default class EasyRentPasangScreen extends React.Component {
               underlineColorAndroid="transparent"
               autoCapitalize="none"
               keyboardType="numeric"
-              onChangeText={this.cariChangeText}
-              onSubmitEditing={this.cariBarang}
             />
             </View>
             <View style={{width:150, paddingLeft:20, paddingTop:20}}>
@@ -245,10 +272,9 @@ export default class EasyRentPasangScreen extends React.Component {
             <TextInput style={styles.textinputhalfline}
               ref='MinWaktu'
               underlineColorAndroid="transparent"
+              value = {param!=[]?param.MinWaktu:''}
               autoCapitalize="none"
               keyboardType="numeric"
-              onChangeText={this.cariChangeText}
-              onSubmitEditing={this.cariBarang}
             />
             </View>
             <View style={{flexDirection:'column'}}>
@@ -257,10 +283,9 @@ export default class EasyRentPasangScreen extends React.Component {
             <TextInput style={styles.textinputhalfline}
               ref="MaxWaktu"
               underlineColorAndroid="transparent"
+              value = {param!=[]?param.MaxWaktu:''}
               autoCapitalize="none"
               keyboardType="numeric"
-              onChangeText={this.cariChangeText}
-              onSubmitEditing={this.cariBarang}
             />
             </View>
             </View>
@@ -302,7 +327,7 @@ const styles = StyleSheet.create({
     marginLeft:0,    
   },
   inputlabel: {
-    color:'darkgray', 
+    color:'#606060', 
     fontSize:14, 
     height:45,
     paddingTop: 20,

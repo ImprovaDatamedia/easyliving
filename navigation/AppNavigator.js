@@ -9,13 +9,7 @@ import {
 } from 'react-native';
 import Main from './MainTabNavigator';
 import Login from '../screens/LoginScreen';
-// export default createSwitchNavigator({
-//     // You could add another route here for authentication.
-//     // Read more at https://reactnavigation.org/docs/en/auth-flow.html
-//     First: Login,
-//     Home : MainTabNavigator,
-//
-//   });
+
 class AuthLoadingScreen extends React.Component {
   constructor(props) {
     super(props);
@@ -53,26 +47,16 @@ const AppStack = createStackNavigator({
  });
 const AuthStack = createStackNavigator({ SignIn: Login });
 
-
-export default createAppContainer(createSwitchNavigator(
-  {
-    AuthLoading: AuthLoadingScreen,
-    App: AppStack,
-    Auth: AuthStack,
-  },
-  {
-    initialRouteName: 'AuthLoading',
-  }
-));
-
-
-/*
 export default createAppContainer(createSwitchNavigator(
   {
     Main: Main,
+  //   App: AppStack,
+  //   Auth: AuthStack,
+  // },
+  // {
+  //   initialRouteName: 'AuthLoading',
   }
 ));
-*/
 
 const styles = StyleSheet.create({
   container: {

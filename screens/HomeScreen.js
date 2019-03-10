@@ -23,8 +23,12 @@ stripNews = false;
 export default class HomeScreen extends React.Component {
 
   static navigationOptions = {
-    header : null
+    header : null,
+    headerStyle: {backgroundColor: 'cornsilk'},
   };
+
+
+
 
   constructor(props) {
     super(props);
@@ -45,12 +49,14 @@ export default class HomeScreen extends React.Component {
     return (
         <View style={{flex:1,  backgroundColor: 'white'}}>
 
-            <View style={{flexDirection:'row', width:lebar, height:lebar/5, alignItems: 'center', justifyContent:'center', marginTop:35, marginBottom:10, backgroundColor: 'white', shadowColor: "black", shadowOffset: { height:4, width:4}, shadowRadius:4, shadowOpacity: 0.3}}>
+            <View style={{flexDirection:'row', width:lebar, height:lebar/4, alignItems: 'center', justifyContent:'center', marginTop:0, paddingTop:20, marginBottom:0, backgroundColor: '#e7e9df', shadowColor: "black", shadowOffset: { height:4, width:4}, shadowRadius:4, shadowOpacity: 0.3}}>
                 <View style={{shadowColor: "black", shadowOffset: { height:2, width:2}, shadowRadius:3, shadowOpacity: 0.3}}>
-                  <Image style={{width:lebar*0.4, height:lebar*0.4*0.427, resizeMode: 'stretch'}} source={require('../assets/images/HomeScreen/EasyLivingLogoNewSmall.png')}/>
+                  <Image style={{width:lebar*0.45, height:lebar*0.45*0.427, resizeMode: 'contain'}} source={require('../assets/images/HomeScreen/EasyLivingLogoBolong.png')}/>
                 </View>
-                <Text style={{color:'#909090', paddingLeft:5, paddingTop:20, fontSize:20, fontWeight:'normal', shadowColor: "black", shadowOffset: { height:1, width:1}, shadowRadius:1, shadowOpacity: 0.3}}>@ Sentul City</Text>
+                <Text style={{color:'#707070', paddingLeft:5, paddingTop:22, fontSize:20, fontWeight:'normal', shadowColor: "black", shadowOffset: { height:1, width:1}, shadowRadius:1, shadowOpacity: 0.3}}>@ Sentul</Text>
             </View> 
+            <View style={{width:lebar, height:3, backgroundColor:'#d8d8d8'}}/>
+
             <ScrollView style={{paddingTop:10, backgroundColor:'#f8f8f8'}}>   
                 <View style={{flex:1, justifyContent: 'space-around', flexDirection:"row", height:100, alignItems:'center',  backgroundColor:'white'}}>
                   <HomeIconButton onPress={()=>{this.goto("EasyGo")}} imageSource={require('../assets/icons/iconEasyGo.png')} label='Transport' labelStyle='eLiving' style={{width:80, height:60}}/>
@@ -87,15 +93,16 @@ export default class HomeScreen extends React.Component {
                     />
                 </View>
                 <HideableView hide={this.state.hideExtraPage} style={{flex:1, marginBottom:4, justifyContent: 'space-around', flexDirection:"row", height:100, alignItems:'center',  backgroundColor:'white'}}>
-                  <HomeIconButton onPress={()=>{this.goto("EasyAdminLoc")}} imageSource={require('../assets/icons/laundry.png')} label='Laundy' labelStyle='eLiving' style={{width:80, height:60}}/>
+                  <HomeIconButton onPress={()=>{this.goto("")}} imageSource={require('../assets/icons/laundry.png')} label='Laundy' labelStyle='eLiving' style={{width:80, height:60}}/>
                   <HomeIconButton onPress={()=>{this.goto("")}} imageSource={require('../assets/icons/photo.png')} label='Photo Print' labelStyle='eLiving' style={{width:80, height:60}}/>
-                  <HomeIconButton onPress={()=>{this.goto("EasyPhoneKategori")}} imageSource={require('../assets/icons/farmacy.png')} label='Farmacy' labelStyle='eLiving' style={{width:80, height:60}}/>
+                  <HomeIconButton onPress={()=>{this.goto("")}} imageSource={require('../assets/icons/farmacy.png')} label='Farmacy' labelStyle='eLiving' style={{width:80, height:60}}/>
                   <HomeIconButton onPress={()=>{this.goto("")}} imageSource={require('../assets/icons/fruits.png')} label='Buah Lokal' labelStyle='eLiving' style={{width:80, height:60}}/>
                 </HideableView>
                 <View style={{marginTop:0, marginBottom:0, paddingTop:0, paddingBottom:0, marginLeft:0, marginRight:0, backgroundColor:'#f8f8f8'}}>
 
                   <DBViewList
-                    query = 'SELECT * FROM tbnews;'
+                    query = 'SELECT * FROM tbnews '
+                    limit = {5}
                     onRenderItem={(item) => (
                       <View key={item.ID} style={{marginTop:0, marginBottom:2, paddingTop:20, paddingBottom:5, paddingLeft:10, marginLeft:0, paddingRight:10, marginRight:0, backgroundColor:'white'}}>
                       <TouchableOpacity  onPress={()=>{this.goto("EasyWebBrowser", {url:item.Link})}}>

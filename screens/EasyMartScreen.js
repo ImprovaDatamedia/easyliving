@@ -31,6 +31,7 @@ export default class EasyMartScreen extends React.Component {
 
   static navigationOptions = {
     title: 'Easy Mart',
+    headerStyle: {backgroundColor: '#e7e9df'},
   };
 
   constructor(props) {
@@ -46,7 +47,15 @@ export default class EasyMartScreen extends React.Component {
     this.props.navigation.navigate("EasyMartBarangDetail", {Data:item});
   }
 
-  renderFooter = () => {
+  showEasyMartKeranjangScreen=()=>{
+    console.log('kerangjang');
+//    alert('Hi');
+//    this.props.navigation.navigate("EasyMartBarangDetail", {Data:item});
+//    this.props.navigation.navigate("EasyMartBarangDetail");//"EasyMartKeranjang");
+  }
+
+
+renderFooter = () => {
     return(
       <View style={{height:90, flexDirection:"row", justifyContent:'center', alignItems:'center', marginBottom:2, marginLeft:4, marginRight:4, borderRadius:5, backgroundColor:'white'}}>
               <Button buttonStyle={{height:40, width:100, alignItems:'center', backgroundColor:'mediumseagreen'}}
@@ -102,12 +111,7 @@ export default class EasyMartScreen extends React.Component {
 
 
   showCariTextInput=()=>{
-    //this._focusNextField('cariText');
     this.setState({hideCari: !this.state.hideCari});
-//    this.cariText._root.focus(); 
-//    if(this.passTextInput!=null){ 
-//      this.passTextInput.focus()
-//    }
   }
 
   render() {
@@ -121,15 +125,15 @@ export default class EasyMartScreen extends React.Component {
     }
     return (
       <View  style={{flex:1}}>
-        <View hide={this.state.hideBanner} style={{alignItems:'center', marginTop:1, marginBottom:0, marginLeft:0, marginRight:0, paddingTop:0, paddingBottom:0, backgroundColor:'white'}}>
+        <View hide={this.state.hideBanner} style={{alignItems:'center', marginTop:0, marginBottom:0, marginLeft:0, marginRight:0, paddingTop:0, paddingBottom:0, backgroundColor:'white'}}>
           <Image style={{borderRadius:0, width:lebar, height: lebar*(1/2.5), resizeMode: 'stretch'}} 
-            source={{uri:'https://www.easyliving.id/images/rent/bukalapak.jpg'}}/>
+            source={{uri:'https://www.easyliving.id/images/rent/eMartHead.png'}}/>
         </View>
-        <View style={{justifyContent: 'space-around', flexDirection:"row", paddingTop:5, height:50, alignItems:'flex-start',  backgroundColor:'#4a485f'}}>
+        <View style={{justifyContent: 'space-around', flexDirection:"row", paddingTop:5, height:60, alignItems:'center',  backgroundColor:'#4a485f'}}>
           <ActionIconButton onPress={this.showEasyRentKategoriScreen} name="list" label='Kategori'/>
           <ActionIconButton onPress={this.showCariTextInput} name="search" label='Cari'/>
           <ActionIconButton onPress={this.showKetentuan} name="list-alt" label='Ketentuan'/>
-          <ActionIconButton onPress={this.showEasyRentPasangScreen} name="shopping-basket" label='Keranjang'/>
+          <ActionIconButton onPress={this.showEasyMartKeranjangScreen} name="shopping-basket" label='Keranjang'/>
         </View>
         <HideableView hide={this.state.hideCari} style={{flexDirection:"row", height:55, alignItems:'center',  backgroundColor:'#514e65'}}>
             <TextInput style={{marginLeft: 10, marginRight:10, marginTop:0, borderRadius:5, height: 40, width:lebar-80,  paddingLeft:5, borderColor: '#b2b2b2', borderWidth: 1, backgroundColor:'#FFFCF4'}}
@@ -146,8 +150,9 @@ export default class EasyMartScreen extends React.Component {
               onPress={this.cariBarang}
             ></Icon.Button>
         </HideableView>
+        <View style={{width:lebar, height:3, backgroundColor:'lightgray'}}/>
         <DBFlatList style={{flex:1, paddingTop:2, paddingLeft:0, paddingRight:0, backgroundColor:'#f0f0f0'}}
-          query = {'SELECT * FROM skawan.tbbarang '+vWhere} 
+          query = {'SELECT * FROM skawan.tbbarang ORDER By SalesRating DESC '+vWhere} 
           onRenderItem = {this.drawItem}
           onTableEmpty = {() => {Alert.alert('eLiving','No item available in this category')}}
           onRenderFooter = {this.renderFooter}

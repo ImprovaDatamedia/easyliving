@@ -16,13 +16,12 @@ export default class InfoScreen extends React.Component {
   };
 
   render() {
-    /* Go ahead and delete ExpoConfigView and replace it with your
-     * content, we just wanted to give you a quick view of your config */
     return (
-      <Text>
-      Development mode is enabled, your app will be slower but you can use useful development
-      tools.
-    </Text>    
-    );
+      <View style={{flex:1, paddingLeft:10, paddingTop:10, paddingBottom:10, paddingRight:10, borderRadius:0, backgroundColor:'#fcfcfc'}}>
+        <Text style={{color:'gray', marginTop:5, textAlign:'center', textAlignVertical:'top', fontSize:20, fontWeight:'bold', backgroundColor: 'transparent'}}>
+          This page will contain information about Easy Living and how to utilize it to make your live in Sentul City easier.
+        </Text>
+      </View>
+);
   }
 }

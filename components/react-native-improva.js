@@ -2,12 +2,46 @@
 
 import React from 'react';
 import {ExpoConfigView } from '@expo/samples';
-import {View,Text,TouchableOpacity,Image, FlatList, SectionList, StyleSheet} from 'react-native';
+import {View,Text,TouchableOpacity,Image, FlatList, SectionList, StyleSheet, Alert} from 'react-native';
 import {ListItem} from 'react-native-elements'
 import { Button } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
-  export class DBText extends React.Component {
+
+//===========================================================
+export const updateTable = async(query) => {
+    console.log(query);
+    return fetch('http://mwn.improva.id:8084/gpsloc/reactnative/API.php', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        token : 'UPDATE',
+        query : query
+      })
+    }).then((response) => {
+      let vStr = JSON.stringify(response);
+      console.log(vStr);
+      if(vStr.indexOf('Record Successfully Updated')!=-1){
+        console.log('update DB ok');
+        return true;
+      } 
+      else
+        {        
+          console.log('update DB failed');
+          return false;
+        } 
+    }).catch((error) => {
+      console.error(error);
+      alert('Error'); 
+    }); 
+  }
+
+
+//===========================================================
+export class DBText extends React.Component {
 
   constructor(props) {
     super(props);
@@ -17,7 +51,6 @@ import Icon from 'react-native-vector-icons/FontAwesome';
   }
 
   queryTable = (vQuery) => {
-    console.log(vQuery);
     fetch('http://mwn.improva.id:8084/gpsloc/reactnative/API.php', {
       method: 'POST',
       headers: {
@@ -52,7 +85,8 @@ import Icon from 'react-native-vector-icons/FontAwesome';
   }
 }
 
-  export const HideableView = (props) => {
+//===========================================================
+export const HideableView = (props) => {
     const { children, hide, style } = props;
     if (hide) {
       return null;
@@ -64,7 +98,8 @@ import Icon from 'react-native-vector-icons/FontAwesome';
     );
   };
 
-  export class HomeIconButton extends React.Component {
+//===========================================================
+export class HomeIconButton extends React.Component {
 
     render() {
       const {children, style} = this.props;
@@ -88,36 +123,42 @@ import Icon from 'react-native-vector-icons/FontAwesome';
       }
   }  
 
-  export class ActionIconButton extends React.Component {
+//===========================================================
+export class ActionIconButton extends React.Component {
 
     static defaultProps = {
       backgroundColor : 'transparent',
+      fontColor: '#f0f0f0',
     }
 
     render() {
       const {children, style} = this.props;
       let shadowSize=1;
-      return (
-        <View style={{height:45, justifyContent:'flex-start', alignItems:'flex-start', paddingRight:0, marginBottom:0, backgroundColor:'transparent'}}>
-          <TouchableOpacity onPress={this.props.onPress} style={{backgroundColor:'transparent', flexDirection:"column", justifyContent:'flex-start', alignItems:'center', }}> 
-            <Icon.Button style={{height:28, paddingTop:0, paddingLeft:20}}
-              name = {this.props.name}
-              color = {this.props.color}
-              backgroundColor = {this.props.backgroundColor}
-              borderColor={this.props.borderColor}
-              borderWidth={this.props.borderWidth}
-              onPress={this.props.onPress}
-            />
-            <View style={{backgroundColor:'transparent',  shadowColor: "black", shadowOffset: { height:shadowSize, width:shadowSize}, shadowRadius:shadowSize, shadowOpacity: 0.3}}> 
-              <Text style={{color:'#f0f0f0', paddingTop:-10, fontSize:12, fontWeight:'normal'}}>{this.props.label}</Text>
-            </View>
-          </TouchableOpacity>
-        </View>
-      )
+      if(this.props.name=='blank'){
+        return(<View style={{height:45, width:60, backgroundColor:'transparent'}}/>)
+      } else {
+        return (
+          <View style={{height:45, justifyContent:'flex-start', alignItems:'flex-start', paddingRight:0, marginBottom:0, backgroundColor:'transparent'}}>
+            <TouchableOpacity onPress={this.props.onPress} style={{backgroundColor:'transparent', flexDirection:"column", justifyContent:'flex-start', alignItems:'center', }}> 
+              <Icon.Button style={{height:28, paddingTop:0, paddingLeft:20}}
+                name = {this.props.name}
+                color = {this.props.color}
+                backgroundColor = {this.props.backgroundColor}
+                borderColor={this.props.borderColor}
+                borderWidth={this.props.borderWidth}
+                onPress={this.props.onPress}
+              />
+              <View style={{backgroundColor:'transparent',  shadowColor: "black", shadowOffset: { height:shadowSize, width:shadowSize}, shadowRadius:shadowSize, shadowOpacity: 0.3}}> 
+                <Text style={{color:this.props.fontColor, paddingTop:-10, fontSize:12, fontWeight:'normal'}}>{this.props.label}</Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+        )
+      }
     }
   }  
 
-
+//===========================================================
   export class DBViewList extends React.Component {
 
     _isMounted = false ;
@@ -190,6 +231,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
   
   }
 
+  //===========================================================
   export class DBFlatList extends React.Component {
 
     _isMounted = false ;
@@ -218,7 +260,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
       } else {
         var vquery = this.props.query+' LIMIT '+this.props.limit+' OFFSET '+this.offset;
       }
-//        console.log('query: '+vquery);
+        console.log('getTable query: '+vquery);
       try{
         return fetch('http://mwn.improva.id:8084/gpsloc/reactnative/API.php', {
           method: 'POST',
@@ -281,7 +323,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 //        if(!equal(this.props.query, prevProps.query))
         if(this.props.query!=prevProps.query)
         {
-            this.getTable();
+          this.getTable();
         }         
     }
 
@@ -306,19 +348,24 @@ import Icon from 'react-native-vector-icons/FontAwesome';
     }
 
 
+
     renderFooter = () => {
       if(!this.thereIsMore){
         return null
       } else {
         return(
-          <View style={{height:90, flexDirection:"row", justifyContent:'center', alignItems:'center', marginBottom:2, marginLeft:4, marginRight:4, borderRadius:5, backgroundColor:'white'}}>
-            <Button buttonStyle={{height:40, width:100, alignItems:'center', backgroundColor:'mediumseagreen'}}
-              raised
-              onPress={()=> this.getTable()}
-              title="Load More"
-              borderRadius={5}
-              color="#841584"
-            />                
+
+          <View style={{height:90, flexDirection:"column", justifyContent:'center', alignItems:'center', marginBottom:2, marginLeft:4, marginRight:4, borderRadius:5, backgroundColor:'transparent'}}>
+              <Icon.Button style={{height:50, paddingTop:0, paddingLeft:20}}
+                name = 'arrow-circle-o-down'
+                color = '#e47261'
+                backgroundColor = '#f0f0f0'
+                onPress={()=>this.getTable()}
+                size={45}
+              />
+              <View style={{backgroundColor:'transparent',}}> 
+                <Text style={{color:"gray", paddingTop:-10, fontSize:16, fontWeight:'normal'}}>Load More</Text>
+              </View>
           </View>   
         )}
       }
@@ -345,6 +392,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
     
     render() {
       const {children, style} = this.props;
+      console.log('render Flatlist')
       return (
         <View style={style}>
           <FlatList
@@ -363,7 +411,8 @@ import Icon from 'react-native-vector-icons/FontAwesome';
   
   }
 
-  export class DBSectionList extends React.Component {
+//===========================================================
+export class DBSectionList extends React.Component {
 
     _isMounted = false ;
 
@@ -461,7 +510,8 @@ import Icon from 'react-native-vector-icons/FontAwesome';
   
   }
 
-  export class TextOfMySQLDate extends React.Component {
+//===========================================================
+export class TextOfMySQLDate extends React.Component {
 
     render() {
       const { children, style } = this.props;
@@ -482,7 +532,8 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 
   }    
 
-  export class ImageAlter extends React.Component {
+//===========================================================
+export class ImageAlter extends React.Component {
 
     constructor(props) {
         super(props);
@@ -508,15 +559,18 @@ import Icon from 'react-native-vector-icons/FontAwesome';
       }
   }
 
-  export const ThousandFormat=(value)=>{
+//===========================================================
+export const ThousandFormat=(value)=>{
     return (value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "."));
   }
 
-  export const RupiahFormat=(value)=>{
+//===========================================================
+export const RupiahFormat=(value)=>{
     return ('Rp. '+value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "."));
   }
 
-  export const DisplayHarga=(props)=>{
+//===========================================================
+export const DisplayHarga=(props)=>{
     const {harga, hargaNormal, style} = props;
     if(hargaNormal==-1)
     {
@@ -552,7 +606,8 @@ import Icon from 'react-native-vector-icons/FontAwesome';
     }
   }
 
-  export class Spinner extends React.Component {
+//===========================================================
+export class Spinner extends React.Component {
 
   constructor(props) {
     super(props);
@@ -671,12 +726,14 @@ import Icon from 'react-native-vector-icons/FontAwesome';
   }
 
 
-  export const SetFocus = (props) => {
+//===========================================================
+export const SetFocus = (props) => {
     const {focusref} = props;
     props.focusref.focus()
       return null;
   };
 
+//===========================================================
 const styles = StyleSheet.create({
   container: {
     borderWidth: 0.5,

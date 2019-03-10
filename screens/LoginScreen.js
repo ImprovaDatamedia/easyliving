@@ -48,10 +48,31 @@ export default class WelcomeScreen extends React.Component {
           this.props.navigation.navigate('Account');
       }else if (navigation.getParam('screenName')=='easyRent') {
           this.props.navigation.navigate('EasyRentPasang');
+      }else{this.props.navigation.navigate('Home')}
       }
-      }
+
     onPress = () => {
-      fetch('http://192.168.1.104:8080/api/app/index.php/datalogin', {
+
+        const dataUser = {
+                "nama" : 'Dudi Heryadi',
+                "userId" : '1',
+                "phone" : '081234567',
+                "alamat" : 'Jl.Casablanca Raya',
+                "username" : 'dudiher',
+                "photo" : '',
+        }
+        AsyncStorage.setItem('userData',JSON.stringify(dataUser) );
+        AsyncStorage.setItem('userToken', 'abcd');
+        if (this.state.screenName=='profile') {
+            this.props.navigation.navigate('Account');
+        }else if (this.state.screenName=='easyRent') {
+            this.props.navigation.navigate('EasyRentPasang');
+        }else if (this.state.screenName=='') {
+            this.props.navigation.navigate('Account');
+      }else{this.props.navigation.navigate('Home')}
+    }
+/*      
+      fetch('https://www.easyliving.id/api/app/index.php/datalogin', {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
@@ -91,7 +112,7 @@ export default class WelcomeScreen extends React.Component {
             });
       }
 
-
+*/
 
     render() {
     // let lebar = 1.0*Dimensions.get('window').width;
