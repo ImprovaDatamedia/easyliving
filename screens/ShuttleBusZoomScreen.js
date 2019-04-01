@@ -147,8 +147,9 @@ setwatchPosition = () => {
       );
 }
 
+/*
 updateMyLoc = () => {
-/*    navigator.geolocation.getCurrentPosition(
+    navigator.geolocation.getCurrentPosition(
         (position) => {
             this.myLong= position.coords.longitude;
             this.myLat= position.coords.latitude;
@@ -161,11 +162,12 @@ updateMyLoc = () => {
         (error) => {if(this.state.isMounted){this.setState({ error: error.message })}},
         { enableHighAccuracy: false, timeout: 200000, maximumAge: 1000 },
       );
-  */
+
+      
 //        alert(this.state.myLong);
 //  this._moveLoc('MyLoc',this.state.myLong,this.state.myLat,0,0);
 }
-
+*/
 
 componentDidMount() {
     this.setState({
@@ -175,7 +177,7 @@ componentDidMount() {
   this.setwatchPosition();
 //  this.updateMyLoc();
   this.intervalBusLoc = setInterval(this.updateBusLoc, 15000);
-  this.intervalMyLoc = setInterval(this.updateMyLoc, 10000);
+//#  this.intervalMyLoc = setInterval(this.updateMyLoc, 10000);
 }
 
 componentWillUnmount() {

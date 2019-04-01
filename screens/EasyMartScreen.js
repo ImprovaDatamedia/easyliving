@@ -55,19 +55,17 @@ export default class EasyMartScreen extends React.Component {
   }
 
 
-renderFooter = () => {
+
+  renderHeader = () => {
+    let lebar =  Dimensions.get('window').width; 
     return(
-      <View style={{height:90, flexDirection:"row", justifyContent:'center', alignItems:'center', marginBottom:2, marginLeft:4, marginRight:4, borderRadius:5, backgroundColor:'white'}}>
-              <Button buttonStyle={{height:40, width:100, alignItems:'center', backgroundColor:'mediumseagreen'}}
-                raised
-                onPress={()=> Alert.alert('eMart','Load More')}
-                title="Load More"
-                borderRadius={5}
-                color="#841584"
-              />                
-      </View>   
+      <View style={{alignItems:'center', marginTop:0, marginBottom:0, marginLeft:0, marginRight:0, paddingTop:0, paddingBottom:0, backgroundColor:'white'}}>
+      <Image style={{borderRadius:0, width:lebar, height: lebar*(1/2.5), resizeMode: 'stretch'}} 
+        source={{uri:'http://www.easyliving.id:81/images/main/eMartHead.png'}}/>
+    </View>
     )
   }
+
 
   listScroll=(event)=> {
     if (event.nativeEvent.contentOffset.y<=0) {
@@ -78,14 +76,39 @@ renderFooter = () => {
   }
 
   drawItem = (item) => {
-    let imgSource = "uri: 'https://www.easyliving.id/images/EasyMart/Products/'+item.ImagePath+'/'+item.ImagePath+'_thumb.jpg'"
-    let imgDefault = 'https://www.easyliving.id/images/EasyMart/Products/'+item.ImagePath+'/'+item.ImagePath+'_1.jpg'
+    return(
+
+      <View style={{flex:1, height:180, margin:6, borderRadius:5, backgroundColor:'white'}}>
+      <TouchableOpacity style={{flex:1, flexDirection:'column'}} onPress={()=>this.showEasyMartBarangDetailScreen(item)}>
+        <View style={{flex:0.6, alignItems:'center'}}>
+         <ImageAlter 
+              source={{uri: 'http://www.easyliving.id:81/images/EasyMart/Products/'+item.ImagePath+'/'+item.ImagePath+'_thumb.jpg'}} 
+              alterSource={{uri: 'http://www.easyliving.id:81/images/EasyMart/Products/'+item.ImagePath+'/'+item.ImagePath+'_1.jpg'}} 
+              defaultSource={require('../assets/images/NoImage.png')}
+              style={{marginTop:5, marginLeft:5, width:100, height:100}}/>
+        </View>
+        <View style={{flex:0.4, marginLeft:5, marginRight:5}}>
+          <Text numberOfLines={2} style={{color:'gray', height:40, textAlign:'left', fontSize:14, fontWeight:'normal', backgroundColor: 'transparent'}}>
+                  {item.Nama}
+          </Text>
+          <DisplayHarga harga={item.Harga} hargaNormal={item.HargaNormal} style={{height:26, backgroundColor:'transparent'}}/>
+        </View>
+        </TouchableOpacity>
+
+      </View>
+    )
+  }
+
+
+/*  drawItem = (item) => {
+    let imgSource = "uri: 'http://www.easyliving.id:81/images/EasyMart/Products/'+item.ImagePath+'/'+item.ImagePath+'_thumb.jpg'"
+    let imgDefault = 'http://www.easyliving.id:81/images/EasyMart/Products/'+item.ImagePath+'/'+item.ImagePath+'_1.jpg'
     return(
         <TouchableOpacity onPress={()=>this.showEasyMartBarangDetailScreen(item)}>
           <View style={{flex:1, flexDirection:"row", alignItems:'flex-start', marginBottom:2, marginLeft:4, marginRight:4, borderRadius:5, backgroundColor:'white'}}>
             <ImageAlter 
-              source={{uri: 'https://www.easyliving.id/images/EasyMart/Products/'+item.ImagePath+'/'+item.ImagePath+'_thumb.jpg'}} 
-              alterSource={{uri: 'https://www.easyliving.id/images/EasyMart/Products/'+item.ImagePath+'/'+item.ImagePath+'_1.jpg'}} 
+              source={{uri: 'http://www.easyliving.id:81/images/EasyMart/Products/'+item.ImagePath+'/'+item.ImagePath+'_thumb.jpg'}} 
+              alterSource={{uri: 'http://www.easyliving.id:81/images/EasyMart/Products/'+item.ImagePath+'/'+item.ImagePath+'_1.jpg'}} 
               defaultSource={require('../assets/images/NoImage.png')}
               style={{marginTop:5, marginLeft:5, width:100, height:100}}/>
               <Text  style={{position: 'absolute', left:0, top:0, color:'#b0b0b0', marginTop:5, marginBottom:0, textAlign:'left', textAlignVertical:'top', fontSize:10, fontWeight:'normal', backgroundColor: 'transparent'}}>
@@ -95,13 +118,13 @@ renderFooter = () => {
               <Text  style={{flex:0.5, color:'gray', textAlign:'left', fontSize:16, fontWeight:'normal', backgroundColor: 'transparent'}}>
                   {item.Nama}
               </Text>
-              <DisplayHarga harga={item.Harga} hargaNormal={item.HargaNormal} style={{height:20, backgroundColor:'transparent'}}/>
+              <DisplayHarga harga={item.Harga} hargaNormal={item.HargaNormal} style={{height:26, backgroundColor:'transparent'}}/>
             </View>
           </View>   
         </TouchableOpacity>
       )
     }
-    
+ */   
     cariBarang=()=>{
 //      this.cariText = this.refs.cariText._lastNativeText, 
       this.setState({hideCari: true});
@@ -125,15 +148,11 @@ renderFooter = () => {
     }
     return (
       <View  style={{flex:1}}>
-        <View hide={this.state.hideBanner} style={{alignItems:'center', marginTop:0, marginBottom:0, marginLeft:0, marginRight:0, paddingTop:0, paddingBottom:0, backgroundColor:'white'}}>
-          <Image style={{borderRadius:0, width:lebar, height: lebar*(1/2.5), resizeMode: 'stretch'}} 
-            source={{uri:'https://www.easyliving.id/images/rent/eMartHead.png'}}/>
-        </View>
-        <View style={{justifyContent: 'space-around', flexDirection:"row", paddingTop:5, height:60, alignItems:'center',  backgroundColor:'#4a485f'}}>
-          <ActionIconButton onPress={this.showEasyRentKategoriScreen} name="list" label='Kategori'/>
-          <ActionIconButton onPress={this.showCariTextInput} name="search" label='Cari'/>
-          <ActionIconButton onPress={this.showKetentuan} name="list-alt" label='Ketentuan'/>
-          <ActionIconButton onPress={this.showEasyMartKeranjangScreen} name="shopping-basket" label='Keranjang'/>
+        <View style={{justifyContent: 'space-around', flexDirection:"row", paddingTop:0, height:60, alignItems:'center',  backgroundColor:'#f4f4f4'}}>
+          <ActionIconButton color='#606060' backgroundColor='#f4f4f4' fontColor='#404040' onPress={this.showEasyRentKategoriScreen} name="list" label='Kategori'/>
+          <ActionIconButton color='#606060' backgroundColor='#f4f4f4' fontColor='#404040' onPress={this.showCariTextInput} name="search" label='Cari'/>
+          <ActionIconButton color='#606060' backgroundColor='#f4f4f4' fontColor='#404040' onPress={this.showKetentuan} name="list-alt" label='Ketentuan'/>
+          <ActionIconButton color='#606060' backgroundColor='#f4f4f4' fontColor='#404040' onPress={this.showEasyMartKeranjangScreen} name="shopping-basket" label='Keranjang'/>
         </View>
         <HideableView hide={this.state.hideCari} style={{flexDirection:"row", height:55, alignItems:'center',  backgroundColor:'#514e65'}}>
             <TextInput style={{marginLeft: 10, marginRight:10, marginTop:0, borderRadius:5, height: 40, width:lebar-80,  paddingLeft:5, borderColor: '#b2b2b2', borderWidth: 1, backgroundColor:'#FFFCF4'}}
@@ -150,14 +169,15 @@ renderFooter = () => {
               onPress={this.cariBarang}
             ></Icon.Button>
         </HideableView>
-        <View style={{width:lebar, height:3, backgroundColor:'lightgray'}}/>
-        <DBFlatList style={{flex:1, paddingTop:2, paddingLeft:0, paddingRight:0, backgroundColor:'#f0f0f0'}}
+        <View style={{width:lebar, height:0, backgroundColor:'lightgray'}}/>
+        <DBFlatList style={{flex:1, paddingTop:0, paddingLeft:0, paddingRight:0, backgroundColor:'#f4f4f4'}}
           query = {'SELECT * FROM skawan.tbbarang ORDER By SalesRating DESC '+vWhere} 
           onRenderItem = {this.drawItem}
           onTableEmpty = {() => {Alert.alert('eLiving','No item available in this category')}}
-          onRenderFooter = {this.renderFooter}
+          onRenderHeader = {this.renderHeader}
           onScroll = {this.listScroll}
           limit = {20}
+          numColumns = {2}
         />
 
         </View>    

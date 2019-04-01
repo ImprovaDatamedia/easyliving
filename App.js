@@ -2,6 +2,7 @@ import React from 'react';
 import { Platform, StatusBar, StyleSheet, View, Text } from 'react-native';
 import { AppLoading, Asset, Font, Icon } from 'expo';
 import AppNavigator from './navigation/AppNavigator';
+import localStorage from 'react-native-sync-localstorage'
 
 export default class App extends React.Component {
 
@@ -29,6 +30,14 @@ export default class App extends React.Component {
   }
 
   _loadResourcesAsync = async () => {
+      localStorage.getAllFromLocalStorage()
+      .then(() => {
+        localStorage.setItem('version',0.5);
+      // Do Something after loading...
+      })
+      .catch(err => {
+        console.warn(err)
+      });
     return Promise.all([
       Asset.loadAsync([
         require('./assets/images/robot-dev.png'),

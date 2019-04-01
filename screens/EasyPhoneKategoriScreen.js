@@ -41,42 +41,25 @@ export default class EasyPhoneKategoriScreen extends React.Component {
   }
 
   cariContact=()=>{
-    this.props.navigation.navigate("EasyPhoneNumber", {KategoriID:0, KategoriNama:"Find Contact", cariContact:this.refs.cariText._lastNativeText});
+    this.props.navigation.navigate("EasyPhoneNumber", {kategoriID:0, kategoriNama:'', cariContact:this.refs.cariText._lastNativeText});
   } 
  
-  showEasyPhoneNumberScreen=(KategoriID, KategoriNama)=>{
-//    console.log('Kategori ID: '+KategoriID);
-    console.log(KategoriID+'  '+KategoriNama)
-    this.props.navigation.navigate("EasyPhoneNumber", {KategoriID:KategoriID, KategoriNama:KategoriNama});
+  showEasyPhoneNumberScreen=(kategoriID, kategoriNama)=>{
+    console.log(kategoriID+'  '+kategoriNama)
+    this.props.navigation.navigate("EasyPhoneNumber", {kategoriID:kategoriID, kategoriNama:kategoriNama});
   }   
 
-/*
-  drawRow = (dataJson) => {
-    return(
-        <TouchableOpacity onPress={() => this.showEasyPhoneNumberScreen(dataJson.ID, dataJson.Nama)}>
-        <View key={dataJson.ID} style={{flex:1, height:50, flexDirection:"row", alignItems:'left', marginBottom:2, marginLeft:0, marginRight:0, borderRadius:5, backgroundColor:'white'}}>
-        <View style={{flex:1, alignItems:'left', paddingTop:15, paddingBottom:10, marginLeft:10, marginRight:7, borderRadius:0, backgroundColor:'white'}}>
-          <Text  style={{color:'gray', textAlign:'left', textAlignVertical:'bottom', fontSize:20, backgroundColor: 'transparent'}}>
-              {dataJson.Nama}
-          </Text>
-        </View>
-      </View>   
-      </TouchableOpacity>
-    )
-  }
-*/
+
 drawRow = (item) => {
-  this.strip=!this.strip;
-  return(
-    <ListItem containerStyle={{backgroundColor:this.strip?'white':'#f8f8f8',  borderBottomWidth: 1, borderBottomColor: '#e8e8e8'}}
-      onPress={()=>this.showEasyPhoneNumberScreen(item.ID, item.Nama)}
-      key={item.ID}
-      title={item.Nama}
-      chevronColor="gray"
-      chevron
-  />
-  )
-} 
+  let lebar =  Dimensions.get('window').width; 
+return(
+  <View style={{height:90}}>
+    <View style={{height:30}}/>
+    <HomeIconButton onPress={()=>{this.showEasyPhoneNumberScreen(item.ID, item.Nama)}} imageSource={{uri: 'http://www.easyliving.id:81/images/icons/'+item.Icon}} label={item.Nama} labelStyle='normal' style={{width:lebar/4, height:50}}/>
+  </View>
+)
+}
+ 
 
   render() {
     let lebar =  Dimensions.get('window').width; 
@@ -84,7 +67,7 @@ drawRow = (item) => {
       <View style={{flex:1,  backgroundColor: 'white'}}>
         <View style={{alignItems:'center', marginTop:0, marginBottom:0, marginLeft:0, marginRight:0, paddingTop:0, paddingBottom:0, backgroundColor:'white'}}>
           <Image style={{borderRadius:0, width:lebar, height: lebar*(1/2.5), resizeMode: 'stretch'}} 
-          source={{uri:'https://www.easyliving.id/images/rent/eContactLogo.png'}}/>
+          source={{uri:'http://www.easyliving.id:81/images/main/eContactHead.png'}}/>
         </View>
         <View hide={this.state.hideCari} style={{flexDirection:"row", height:55, alignItems:'center',  backgroundColor:'#514e65'}}>
             <TextInput style={{marginLeft: 10, marginRight:10, marginTop:0, borderRadius:5, height: 40, width:lebar-80,  paddingLeft:5, borderColor: '#b2b2b2', borderWidth: 1, backgroundColor:'#FFFCF4'}}
@@ -102,12 +85,12 @@ drawRow = (item) => {
             ></Icon.Button>
         </View>
         <View style={{width:lebar, height:3, backgroundColor:'lightgray'}}/>
-
-        <DBFlatList style={{flex:1, paddingTop:2, paddingLeft:0, paddingRight:0, backgroundColor:'#f0f0f0'}}
+        <DBFlatList style={{flex:1, alignItems:'center',  backgroundColor:'white'}}
           query = 'SELECT * FROM tbphonekategori;'
           onRenderItem={this.drawRow}
+          numColumns = {4}
         />
-      </View>   
+      </View>
     );
   }
 

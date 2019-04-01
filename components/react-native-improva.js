@@ -2,42 +2,286 @@
 
 import React from 'react';
 import {ExpoConfigView } from '@expo/samples';
-import {View,Text,TouchableOpacity,Image, FlatList, SectionList, StyleSheet, Alert} from 'react-native';
+import {View,Text,TouchableOpacity,Image, FlatList, SectionList, 
+        StyleSheet, Dimensions, ActivityIndicator, Alert} from 'react-native';
 import {ListItem} from 'react-native-elements'
 import { Button } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome';
+var CryptoJS = require("crypto-js");
+
+
+export function CryptoEncrypt(passphrase, plain_text){
+  var salt = CryptoJS.lib.WordArray.random(256);
+  var iv = CryptoJS.lib.WordArray.random(16);
+  var key = CryptoJS.PBKDF2(passphrase, salt, { hasher: CryptoJS.algo.SHA512, keySize: 64/8, iterations: 999 });
+  var encrypted = CryptoJS.AES.encrypt(plain_text, key, {iv: iv});
+  var data = {
+      ciphertext : CryptoJS.enc.Base64.stringify(encrypted.ciphertext),
+      salt : CryptoJS.enc.Hex.stringify(salt),
+      iv : CryptoJS.enc.Hex.stringify(iv)
+  }
+  return JSON.stringify(data);
+}
+
+export function CryptoDecrypt(passphrase,encrypted_json_string){
+  var obj_json = JSON.parse(encrypted_json_string);
+  var encrypted = obj_json.ciphertext;
+  var salt = CryptoJS.enc.Hex.parse(obj_json.salt);
+  var iv = CryptoJS.enc.Hex.parse(obj_json.iv);
+  var key = CryptoJS.PBKDF2(passphrase, salt, { hasher: CryptoJS.algo.SHA512, keySize: 64/8, iterations: 999});
+  var decrypted = CryptoJS.AES.decrypt(encrypted, key, { iv: iv});
+  var result = decrypted.toString(CryptoJS.enc.Utf8);
+  return JSON.parse(result)
+}
+
+//===========================================================
+export const queryTableCrypto = (query, onSuccess, onFail) => {
+  if(query.indexOf('undefined')!=-1){return}
+  let data1 = JSON.stringify({
+    token : 'SELECT',
+    query : query
+  })
+  let data = CryptoEncrypt("bV65gfr$",data1);
+  return fetch('http://www.easyliving.id:81/easyliving/mobile/queryrequest', {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: data
+  }).then((response) => {
+    let vStr = JSON.stringify(response);
+    console.log('response crypto: '+vStr);
+    if(vStr.indexOf('No Results Found')==-1){
+      return response.json();
+    } else {
+      if(onFail!=null){
+        onFail();
+      } 
+    } 
+  })
+  .then((responseJson) => { 
+    if(responseJson!=undefined){
+      let decData = CryptoDecrypt("bV65gfr$",JSON.stringify(responseJson));
+      if(onSuccess!=null){
+        onSuccess(decData);
+      } 
+      return decData;
+    }
+  }).catch((error)=> {
+    if(onFail!=null){onFail()}
+  })
+}
 
 
 //===========================================================
-export const updateTable = async(query) => {
-    console.log(query);
-    return fetch('http://mwn.improva.id:8084/gpsloc/reactnative/API.php', {
+export const updateTableCrypto = (query, onSuccess, onFail) => {
+  let data1 = JSON.stringify({
+    token : 'UPDATE',
+    query : query
+  })
+  let data = CryptoEncrypt("bV65gfr$",data1);
+  return fetch('http://www.easyliving.id:81/easyliving/mobile/queryrequest', {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: data
+  }).then((response) => {
+    let vStr = JSON.stringify(response);
+    console.log(response);
+    if(vStr.indexOf('Record Successfully Updated')!=-1){
+      if(onSuccess!=null){onSuccess()}
+    } else {
+      if(onFail!=null){onFail()}
+    } 
+  }).catch((error)=> {
+    if(onFail!=null){onFail()}
+  });
+}
+
+//===========================================================
+export const uploadImage = (uri,fileName,onSuccess,onFail) => {
+  let formData = new FormData();
+  uri = uri.replace('file:/','');
+  console.log(uri);
+  formData.append('photo', {
+    uri : uri,
+    name: fileName,
+    type : 'image/jpg',
+  });
+  return fetch('http://www.easyliving.id:81/app/index.php/datalogin/uploadImage', {
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'multipart/form-data',
+    },
+    method: 'POST',
+    body: formData
+  }).then((response) => {
+     let vStr = JSON.stringify(response);
+     if(vStr.indexOf('Data berhasil di simpan')!=-1){
+        if(onSuccess!=null){onSuccess()}
+      } else {
+        if(onFail!=null){onFail()}
+      } 
+  }).catch((error) => {
+    if(onFail!=null){onFail()}
+  });
+}  
+
+
+//===========================================================
+export const queryTable = (query, onSuccess, onFail) => {
+  if(query.indexOf('undefined')!=-1){return}
+//  console.log('query# '+query)
+  return fetch('http://mwn.improva.id:8084/gpsloc/reactnative/API.php', {
+      method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      token : 'SELECT',
+      query : query
+    })
+  }).then((response) => {
+    let vStr = JSON.stringify(response);
+    console.log('response non crypto: '+vStr);
+    if(vStr.indexOf('No Results Found')==-1){
+      return response.json();
+    } else {
+      if(onFail!=null){
+        onFail();
+      } 
+    } 
+  })
+  .then((responseJson) => { 
+    if(responseJson!=undefined){
+      if(onSuccess!=null){
+        onSuccess(responseJson);
+      } 
+      return responseJson;
+    }
+  }).catch((error)=> {
+    if(onFail!=null){onFail()}
+  })
+}
+
+
+/*
+//===========================================================
+export const queryTable = (query) => {
+  let Empty = '[{"ID":"0"}]';
+  return fetch('http://mwn.improva.id:8084/gpsloc/reactnative/API.php', {
+      method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      token : 'SELECT',
+      query : query
+    })
+  })
+}
+*/
+
+//===========================================================
+export const updateTable = async(query, onResult) => {
+  console.log('querynya: '+query)
+  return await fetch('http://mwn.improva.id:8084/gpsloc/reactnative/API.php', {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      token : 'UPDATE',
+      query : query
+    })
+  }).then((response) => {
+    let vStr = JSON.stringify(response);
+    console.log(vStr);
+    if(vStr.indexOf('Record Successfully Updated')!=-1){
+      if(onResult!=null){
+        onResult('success');
+      } 
+      return true;
+    } else {        
+      if(onResult!=null){
+        onResult('fail');
+      } 
+      console.log('update DB failed');
+      return false;
+    } 
+  }).catch((error) => {
+    console.error(error);
+    alert('Error'); 
+  }); 
+}
+
+
+//===========================================================
+//it did't work!
+export class DBScript extends React.Component {
+
+  constructor(props) {
+    super(props);
+    this.state={
+      theScript : '',
+    }
+  }
+  
+  queryTable = (vSciptName) => {
+    fetch('http://mwn.improva.id:8084/gpsloc/reactnative/API.php', {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        token : 'UPDATE',
-        query : query
+        token : 'SELECT',
+        query : 'SELECT * FROM easyliving.tbscript WHERE Nama="'+vScriptName+'"'
       })
-    }).then((response) => {
+    })
+    .then((response) => {
       let vStr = JSON.stringify(response);
-      console.log(vStr);
-      if(vStr.indexOf('Record Successfully Updated')!=-1){
-        console.log('update DB ok');
-        return true;
-      } 
-      else
-        {        
-          console.log('update DB failed');
-          return false;
-        } 
-    }).catch((error) => {
+      if(vStr.indexOf('No Results Found')>-1){
+        return([{"Script":""}])
+      } else {
+        return response.json()
+      }
+    })
+    .then((responseJson) => {
+      this.setState({theScript:responseJson[0]});
+      if(this.props.onGetText!=undefined){
+        this.props.onGetText(responseJson[0])
+      }
+    })
+    .catch((error) => {
       console.error(error);
-      alert('Error'); 
-    }); 
+    });
   }
+
+  componentDidMount(){
+    if (this.props.sciptName==undefined){}
+    else
+      {this.queryTable(this.props.sciptName)};
+  }
+
+  componentWillReceiveProps(nextProps){
+    if(nextProps.sciptName!=this.props.sciptName){
+      this.queryTable(nextProps.sciptName);
+    }
+  }
+
+
+  render() {
+    const { children, style } = this.props;
+    return (<Text ref={this.state.FLkey} style={style}>{this.state.theValue}{children}</Text>);
+  }
+}
 
 
 //===========================================================
@@ -49,9 +293,93 @@ export class DBText extends React.Component {
       theValue : '',
     }
   }
-
+/*
   queryTable = (vQuery) => {
+    console.log('querynya: '+vQuery);
     fetch('http://mwn.improva.id:8084/gpsloc/reactnative/API.php', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        token : 'SELECT',
+        query : vQuery
+      })
+    })
+    .then((response) => {
+      let vStr = JSON.stringify(response);
+      console.log('vStr; '+vStr);
+      if(vStr.indexOf('No Results Found')>-1){
+        return([{"Value":""}])
+      } else {
+        return response.json()
+      }
+    })
+    .then((responseJson) => {
+      this.setState({theValue:responseJson[0].Value});
+      if(this.props.onGetText!=undefined){
+        this.props.onGetText(responseJson[0].Value)
+      }
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+  }
+*/
+
+  queryTable = (vQuery)  => {
+    queryTable(vQuery,
+      (Data)=>{//console.log('Value: '+JSON.stringify(Data));
+      this.setState({theValue:Data[0].Value});
+      if(this.props.onGetText!=undefined){
+        this.props.onGetText(Data[0].Value)
+      }})
+//      .then((responseJson) => {
+//      this.setState({theValue:responseJson[0].Value});
+//      if(this.props.onGetText!=undefined){
+//        this.props.onGetText(responseJson[0].Value)
+//      }
+//    })
+  }
+
+
+
+  componentDidMount(){
+    if (this.props.query==undefined){}
+    else if (this.props.query=='')
+      {this.setState({theValue:this.props.onEmptyText})}
+    else
+/*      {queryTable(this.props.query,
+        (Data)=>{console.log('Value: '+JSON.stringify(Data));this.setState({theValue:Data[0].Value});
+        if(this.props.onGetText!=undefined){
+          this.props.onGetText(Data[0].Value)
+        }})
+      }
+*/      {this.queryTable(this.props.query)};
+    }
+
+  componentWillReceiveProps(nextProps){
+    if(nextProps.query!=this.props.query){
+/*      {queryTable(this.props.query,
+        (Data)=>{console.log('Value: '+JSON.stringify(Data));this.setState({theValue:Data[0].Value});
+        if(this.props.onGetText!=undefined){
+          this.props.onGetText(Data[0].Value)
+        }})
+      }
+*/      this.queryTable(nextProps.query);
+    }
+  }
+
+  render() {
+    const { children, style } = this.props;
+    return (<Text ref={this.state.FLkey} style={style}>{this.state.theValue}{children}</Text>);
+  }
+}
+
+//===========================================================
+export const DBString = async(vQuery) => {
+  return await fetch('http://mwn.improva.id:8084/gpsloc/reactnative/API.php', {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
@@ -64,26 +392,13 @@ export class DBText extends React.Component {
     })
     .then((response) => response.json())
     .then((responseJson) => {
-      this.setState({theValue:responseJson[0].Value});
+      return responseJson[0].Value;
     })
     .catch((error) => {
       console.error(error);
     });
   }
 
-  componentDidMount(){
-    if (this.props.query==undefined){}
-    else if (this.props.query=='')
-      {this.setState({theValue:this.props.onEmptyText})}
-    else
-      {this.queryTable(this.props.query)};
-  }
-
-  render() {
-    const { children, style } = this.props;
-    return (<Text style={style}>{this.state.theValue}{children}</Text>);
-  }
-}
 
 //===========================================================
 export const HideableView = (props) => {
@@ -239,6 +554,7 @@ export class ActionIconButton extends React.Component {
     loading = false;
     offset = 0;
     thereIsMore = false;
+    refresh = true;
 
 
     constructor(props) {
@@ -260,10 +576,10 @@ export class ActionIconButton extends React.Component {
       } else {
         var vquery = this.props.query+' LIMIT '+this.props.limit+' OFFSET '+this.offset;
       }
-        console.log('getTable query: '+vquery);
       try{
         return fetch('http://mwn.improva.id:8084/gpsloc/reactnative/API.php', {
-          method: 'POST',
+//          return fetch('https://www.easyliving.id/gpsloc/reactnative/API.php', {
+            method: 'POST',
           headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
@@ -354,7 +670,6 @@ export class ActionIconButton extends React.Component {
         return null
       } else {
         return(
-
           <View style={{height:90, flexDirection:"column", justifyContent:'center', alignItems:'center', marginBottom:2, marginLeft:4, marginRight:4, borderRadius:5, backgroundColor:'transparent'}}>
               <Icon.Button style={{height:50, paddingTop:0, paddingLeft:20}}
                 name = 'arrow-circle-o-down'
@@ -372,27 +687,17 @@ export class ActionIconButton extends React.Component {
 
     onScroll=(event)=> {
       this.hasScrolled= true;
-      console.log(JSON.stringify(event.nativeEvent.contentOffset.y));
- //     if (event.contentOffset.y === 0) {
- //       console.log('magic')
- //     }
-      console.log('onscroll')
      }
 
     loadMore(){
       if(!this.loading){
         this.loading = true;
-//        console.log('load more: ');
         this.loading = false;  
       }
-//        if(!this.hasScrolled){ return null; }
-        //       this.getTable();
- //    this.setState({Data: this.state.Data.concat(this.lastItem)})
     }
     
     render() {
       const {children, style} = this.props;
-      console.log('render Flatlist')
       return (
         <View style={style}>
           <FlatList
@@ -402,6 +707,10 @@ export class ActionIconButton extends React.Component {
             onEndReachedThreshold={0}
             onScroll={this.props.onScroll}
             ListFooterComponent={this.renderFooter}
+            ListHeaderComponent={this.props.onRenderHeader}
+            numColumns = {this.props.numColumns}
+            horizontal = {this.props.horizontal}
+            columnWrapperStyle = {this.props.columnWrapperStyle}
             scrollEventThrottle={0}
             animated = {true}
           />  
@@ -537,19 +846,18 @@ export class ImageAlter extends React.Component {
 
     constructor(props) {
         super(props);
-    
-        this.state = {
+          this.state = {
           failed: false
         };
       }
+
       _onError = () => {
         this.setState({ failed: true });
       }
+
       render() {
         const alterImage = <Image source={this.props.alterSource} style={this.props.style} />;
-    
         if (this.state.failed) return alterImage;
-    
         return (
           <Image
             {...this.props}
@@ -571,14 +879,15 @@ export const RupiahFormat=(value)=>{
 
 //===========================================================
 export const DisplayHarga=(props)=>{
-    const {harga, hargaNormal, style} = props;
+    const {harga, hargaNormal, style, children} = props;
     if(hargaNormal==-1)
     {
       return (
         <View style={style}>
           <View style={{flex:1, flexDirection:'row'}}>
-            <Text style={{color:'darkmagenta', textAlign:'left', alignItems:'center', marginBottom:0, fontSize:18, fontWeight:'bold'}}>{RupiahFormat(harga)}</Text>
-            <Text style={{color:'green', textAlign:'left', alignItems:'center', marginBottom:0, fontSize:18, fontWeight:'bold'}}>{'   '}Harga Promosi!</Text>
+            <Text style={{color:'darkmagenta', textAlign:'right', alignItems:'center', marginBottom:0, fontSize:16, fontWeight:'bold'}}>{RupiahFormat(harga)}</Text>
+            <Text style={{color:'green', textAlign:'right', alignItems:'center', marginBottom:0, fontSize:14, fontWeight:'bold'}}>{'   '}Harga Promosi!</Text>
+            {children}
           </View>
         </View>
       );
@@ -587,9 +896,10 @@ export const DisplayHarga=(props)=>{
     {  
       return (
         <View style={style}>
-          <View style={{flex:1, flexDirection:'row', justifyContent:'flex-start'}}>
-            <Text style={{textDecorationLine: 'line-through', color:'lightgray', textAlign:'left', alignItems:'center', marginBottom:0, fontSize:18, fontWeight:'normal'}}>{RupiahFormat(hargaNormal)}</Text>
-            <Text style={{color:'darkmagenta', textAlign:'left', alignItems:'center', marginBottom:0, fontSize:18, fontWeight:'bold'}}>{'   '}{RupiahFormat(harga)}</Text>
+          <View style={{flex:1, flexDirection:'row', justifyContent:'flex-end'}}>
+            <Text style={{textDecorationLine: 'line-through', color:'lightgray', textAlign:'right', alignItems:'center', marginBottom:0, fontSize:14, fontWeight:'normal'}}>{RupiahFormat(hargaNormal)}</Text>
+            <Text style={{color:'darkmagenta', textAlign:'right', alignItems:'center', marginBottom:0, fontSize:16, fontWeight:'bold'}}>{'   '}{RupiahFormat(harga)}</Text>
+            {children}
           </View>
         </View>
       );
@@ -598,8 +908,9 @@ export const DisplayHarga=(props)=>{
     {
       return (
         <View style={style}>
-          <View style={{flex:1}}>
-            <Text style={{flex:1, color:'darkmagenta', textAlign:'left', alignItems:'center', marginBottom:0, fontSize:18, fontWeight:'bold'}}>{RupiahFormat(harga)}</Text>
+          <View style={{flex:1, flexDirection:'row', justifyContent:'flex-end'}}>
+            <Text style={{color:'darkmagenta', textAlign:'right', alignItems:'center', marginBottom:0, fontSize:16, fontWeight:'bold'}}>{RupiahFormat(harga)}</Text>
+            {children}
           </View>
         </View>
       );
@@ -732,6 +1043,33 @@ export const SetFocus = (props) => {
     props.focusref.focus()
       return null;
   };
+
+//===========================================================
+export const screenMask=(show)=>{
+    let lebar =  Dimensions.get('window').width; 
+    let tinggi =  Dimensions.get('window').height; 
+    if(show){
+      return (
+        <View style={{position:"absolute", width:lebar, height:tinggi, backgroundColor:'transparent'}}>
+          <View style={{position:"absolute", opacity:0.3, width:lebar, height:tinggi, backgroundColor:'#808080'}}/>
+          <View style={{position:"absolute",justifyContent:'center', alignItems:'center', borderRadius:5, borderWidth:1, borderColor:'#C0C0C0', left:(lebar-100)/2, top:(tinggi-100)/2, width:100, height:100, backgroundColor:'white'}}>
+            <ActivityIndicator  size="large" color="#303030" /> 
+          </View>
+        </View>
+      )
+    } else {
+      return null;
+    }
+  }
+
+//===========================================================
+export const renderIf=(condition, content)=>{
+    if (condition) {
+        return content;
+    } else {
+        return null;
+    }
+  }
 
 //===========================================================
 const styles = StyleSheet.create({

@@ -23,19 +23,21 @@ import { ImagePicker, Permissions } from 'expo';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { Button } from 'react-native-elements';
 import localStorage from 'react-native-sync-localstorage'
+import {ImageAlter} from '../components/react-native-improva.js';
 
 
 //let namaWaktu = ['jam','hari','minggu','bulan'];
 const namaWaktu = [{"ID":"1","Nama":"jam","Satuan":"perjam"},{"ID":"2","Nama":"hari","Satuan":"perhari"},{"ID":"3","Nama":"minggu","Satuan":"perminggu"},{"ID":"4","Nama":"bulan","Satuan":"perbulan"}];
 
 let lebar =  Dimensions.get('window').width; 
+let imgPath = 'https://www.easyliving.id/app/assets/image/';
+imgSrcAddPhoto = require('../assets/images/EasyRent/AddPhoto.png'); 
 
 
-export default class EasyRentPasangScreen extends React.Component {
+export default class EasyTradePasangScreen extends React.Component {
 
   param = null;
   photoChange = false;
-
   
   static navigationOptions = ({ navigation }) => {
     return{
@@ -48,7 +50,10 @@ export default class EasyRentPasangScreen extends React.Component {
     const {Data} = this.props.navigation.state.params;
     vkategoriID=0;
     vkategoriNama='';
-    vGambaruri = '';
+    this.photoChange = false;
+    vGambaruri1 = '';
+    vGambaruri2 = '';
+    vGambaruri3 = '';
     vGambarSrc = require('../assets/images/EasyRent/AddPhoto.png'); 
     vGambarName = '';
     if(Data!=undefined){
@@ -56,17 +61,20 @@ export default class EasyRentPasangScreen extends React.Component {
       console.log('param asal: '+this.param)
       vkategoriID=Data.KategoriID;
       vkategoriNama=Data.KategoriNama;
-      vGambarName = Data.Gambar;
-      vGambaruri = 'https://www.easyliving.id/app/assets/image/'+Data.Gambar;
-      vGambarSrc = {uri: vGambaruri};
+      vGambarName = Data.Gambar1;
+      vGambaruri1 = imgPath+Data.Gambar1;
+      vGambaruri2 = imgPath+Data.Gambar2;
+      vGambaruri3 = imgPath+Data.Gambar3;
+      vGambarSrc = {uri: imgPath+Data.Gambar};
     }  
     this.state={
       isKategoriModalVisible : false,
       kategoriID : vkategoriID,
       kategoriNama : vkategoriNama,
       ImgFileName1 : vGambarName,
-      Imguri1 : vGambaruri,
-      srcImg : vGambarSrc,
+      Imguri1 : vGambaruri1,
+      Imguri2 : vGambaruri2,
+      Imguri3 : vGambaruri3,
     }
 //    source={{uri: 'https://www.easyliving.id/app/assets/image/'+this.state.param.Gambar}} 
 //    srcImg : require('../assets/images/EasyRent/AddPhoto.png'),
@@ -84,24 +92,24 @@ export default class EasyRentPasangScreen extends React.Component {
   _componentFocused = () => {
     if(localStorage.getItem('userToken')==''){
       Alert.alert('Maaf','Anda harus login untuk bisa memasang iklan');
-      this.props.navigation.navigate("Account",{callerScreen:"EasyRentPasang", cancelScreen:'EasyRent'});
+      this.props.navigation.navigate("Account",{callerScreen:"EasyTradePasang", cancelScreen:'EasyTrade'});
     }    
   }  
 
 
   showEasyRentKategoriScreen=()=>{
-    this.props.navigation.navigate("EasyRentKategori", {callerScreen:"EasyRentPasang"});
+    this.props.navigation.navigate("EasyRentKategori", {callerScreen:"EasyTradePasang"});
   }   
 
 
-  selectPhoto=()=>{
+  selectPhoto=(onGetImage)=>{
     this.photoChange = false;
     Alert.alert(
       'Upload Photo',
       'Pilih sumber photo',
       [
-        {text: 'Kamera', onPress: this._pickImage},
-        {text: 'Galeri Photo', onPress: this._libraryImage},
+        {text: 'Kamera', onPress: ()=>this._pickImage(onGetImage)},
+        {text: 'Galeri Photo', onPress: ()=>this._libraryImage(onGetImage)},
         {text: 'Cancel',style: 'cancel'}
       ],
       {cancelable: false},
@@ -109,7 +117,7 @@ export default class EasyRentPasangScreen extends React.Component {
   }
 
 
-  _pickImage = async () => {
+  _pickImage = async (onGetImage) => {
     await Permissions.askAsync(Permissions.CAMERA);
     await Permissions.askAsync(Permissions.CAMERA_ROLL);
     let result = await ImagePicker.launchCameraAsync({
@@ -119,75 +127,63 @@ export default class EasyRentPasangScreen extends React.Component {
       quality: 1,
     })
     if (!result.cancelled) {
-      this.photoChange = true;  
-      this.setState({
-        Imguri1: result.uri,
-        ImgFileName1 : result.uri.split('/').pop(),
-        srcImg : {uri : result.uri}
-      });
+      this.photoChange = true;
+      if(onGetImage!=null){
+        onGetImage(result.uri)
+      }  
     }
-    console.log('camera: '+this.state.srcImg)
   };
 
-  _libraryImage = async () => {
+  _libraryImage = async (onGetImage) => {
     let result = await ImagePicker.launchImageLibraryAsync({
       allowsEditing: true,
       aspect: [4, 3],
     })
     if (!result.cancelled) {
       this.photoChange = true;  
-      this.setState({
-        Imguri1: result.uri,
-        ImgFileName1 : result.uri.split('/').pop(),
-        srcImg : {uri : result.uri}
-      });
+      if(onGetImage!=null){
+        console.log('onGetImage: '+result.uri)
+        onGetImage(result.uri)
+      }  
     }
-    console.log('galeri: '+this.state.srcImg)
   };
 
 
   submitIklan=()=> {
-    vNamaBarang = this.refs.NamaBarang._lastNativeText;
+    vNama = this.refs.Nama._lastNativeText;
     vKategoriID = this.state.kategoriID;
     vDeskripsi = this.refs.Deskripsi._lastNativeText;
     vHarga = this.refs.Harga._lastNativeText;
-    vSatuanWaktu = this.refs.SatuanWaktu.value();
-    vMinWaktu = this.refs.MinWaktu._lastNativeText;    
-    vMaxWaktu = this.refs.MaxWaktu._lastNativeText;
-    vGambar = this.state.Imguri1;
+    vGambar1 = this.state.Imguri1;
+    vGambar2 = this.state.Imguri2;
+    vGambar3 = this.state.Imguri3;
     vNoContact = this.refs.NoContact._lastNativeText
     console.log('param: '+this.param); 
-    if(vNamaBarang==undefined){vNamaBarang = this.param!=null?this.param.NamaBarang:''};
+    if(vNama==undefined){vNama = this.param!=null?this.param.Nama:''};
     if(vKategoriID==undefined){vKategoriID = this.param!=null?this.param.KategoriID:''};
     if(vDeskripsi==undefined){vDeskripsi = this.param!=null?this.param.Deskripsi:''};
     if(vHarga==undefined){vHarga = this.param!=null?this.param.Harga:''};
-    if(vSatuanWaktu==undefined){vSatuanWaktu = this.param!=null?this.param.SatuanWaktu:'hari'};
-    if(vMinWaktu==undefined){vMinWaktu = this.param!=null?this.param.MinWaktu:1};
-    if(vMaxWaktu==undefined){vMaxWaktu = this.param!=null?this.param.MaxWaktu:0};
     if(vNoContact==undefined){vNoContact = this.param!=null?this.param.NoContact:''};
-    console.log('Satuan Waktu: '+vSatuanWaktu);
-    if(vNamaBarang==''){Alert.alert('Maaf','Harap isi nama barang'); return false}
+    if(vNama==''){Alert.alert('Maaf','Harap isi nama barang'); return false}
     if(vKategoriID==''){Alert.alert('Maaf','Harap pilih kategori'); return false}
     if(vDeskripsi==''){Alert.alert('Maaf','Harap isi deskripsi'); return false}
     if(vHarga==''){Alert.alert('Maaf','Harap isi tarif sewa'); return false}
-    if(vSatuanWaktu==''){Alert.alert('Maaf','Harap isi satuan waktu'); return false}
-    if(vGambar==''){Alert.alert('Maaf','Gambar blm ada'); return false}
+    if(vGambar1==''){Alert.alert('Maaf','Gambar blm ada'); return false}
     if(vNoContact==''){Alert.alert('Maaf','Mohon cantumkan nomor telp. yang bisa dihubungi'); return false}
    
     ID=0;
     let UserID = localStorage.getItem('userData').ID
     if(this.param!=null){ID=this.param.ID}
-    this.props.navigation.navigate("EasyRentPasangConfirm",{
+    this.props.navigation.navigate("EasyTradePasangConfirm",{
       ID : ID,
       UserID : UserID, 
-      NamaBarang: vNamaBarang, 
+      Nama: vNama, 
       KategoriID: vKategoriID, 
       Deskripsi: vDeskripsi, 
       Harga: vHarga, 
-      SatuanWaktu: vSatuanWaktu, 
-      MinWaktu: vMinWaktu!=undefined?vMinWaktu:1, 
-      MaxWaktu: vMaxWaktu!=undefined?vMaxWaktu:1, 
       Imguri1 : this.state.Imguri1,
+      Imguri2 : this.state.Imguri2,
+      Imguri3 : this.state.Imguri3,
       ImgFilename1: this.photoChange?this.state.ImgFileName1:'',
       onGoBack:this.props.navigation.state.params.onGoBack,
       NoContact: vNoContact, 
@@ -195,8 +191,10 @@ export default class EasyRentPasangScreen extends React.Component {
   }
 
 
-  toggleKategoriModalVisible = () =>
+  toggleKategoriModalVisible = () => {
+    console.log('toggle');
     this.setState({ isKategoriModalVisible: !this.state.isKategoriModalVisible});
+  }
 
   selectKategori=(kategoriID, kategoriNama)=>{
     this.setState({kategoriID:kategoriID});
@@ -226,7 +224,6 @@ export default class EasyRentPasangScreen extends React.Component {
     let lebar =  Dimensions.get('window').width; 
 //    let param = this.props.navigation.getParam('Data', []); 
 //    console.log('param: '+JSON.stringify(param));
-//    let arrSatuanWaktu = [{value:'perjam'},{value:'perhari'},{value:'perminggu'},{value:'perbulan'}];
     return (
       <View style={{flex:1,  backgroundColor: 'white'}}>
         <KeyboardAwareScrollView
@@ -240,8 +237,8 @@ export default class EasyRentPasangScreen extends React.Component {
           <Text style={styles.inputlabel}> 
             Nama Barang</Text>
           <TextInput style={styles.textinputsingleline}
-              ref="NamaBarang"
-              defaultValue = {this.param!=null?this.param.NamaBarang:''}
+              ref="Nama"
+              defaultValue = {this.param!=null?this.param.Nama:''}
               underlineColorAndroid="transparent"
               autoCapitalize="words"
             />
@@ -274,7 +271,7 @@ export default class EasyRentPasangScreen extends React.Component {
             <View style={{flexDirection:'row'}}>
             <View style={{flexDirection:'column'}}>
             <Text style={styles.inputlabel}> 
-              Tarif Sewa</Text>
+              Harga Rp.</Text>
             <TextInput style={styles.textinputhalfline}
               ref="Harga"
               underlineColorAndroid="transparent"
@@ -283,48 +280,22 @@ export default class EasyRentPasangScreen extends React.Component {
               keyboardType="numeric"
             />
             </View>
-            <View style={{width:150, paddingLeft:20, paddingTop:20}}>
-            <Dropdown
-              ref="SatuanWaktu" 
-              pickerStyle={styles.dropdown}
-              data={namaWaktu}
-              defaultValue={this.param!=null?'per'+this.param.SatuanWaktu:"perhari"}
-              valueExtractor={({Nama}) => value=Nama}
-              labelExtractor={({Satuan}) => label=Satuan}
-            />
-            </View>
             </View>
 
             <View style={{flexDirection:'row'}}>
-            <View style={{flexDirection:'column'}}>
-            <Text style={styles.inputlabel}> 
-              Min Waktu Sewa</Text>
-            <TextInput style={styles.textinputhalfline}
-              ref='MinWaktu'
-              underlineColorAndroid="transparent"
-              defaultValue = {this.param!=null?this.param.MinWaktu:''}
-              autoCapitalize="none"
-              keyboardType="numeric"
-            />
-            </View>
-            <View style={{flexDirection:'column'}}>
-            <Text style={styles.inputlabel}> 
-              Max Waktu Sewa</Text>
-            <TextInput style={styles.textinputhalfline}
-              ref="MaxWaktu"
-              underlineColorAndroid="transparent"
-              defaultValue = {this.param!=null?this.param.MaxWaktu:''}
-              autoCapitalize="none"
-              keyboardType="numeric"
-            />
-            </View>
             </View>
             <View style={{height:10}}></View>
             <Text style={styles.inputlabel}> 
               Gambar</Text>
-            <View style={{flex:1, paddingLeft:10, borderColor:'gray', alignItems: 'flex-start', backgroundColor:'transparent'}}>
-              <TouchableOpacity onPress={this.selectPhoto}>
-                <Image source={this.state.srcImg} style={{borderWidth:1, borderColor:'#C8C8C8', backgroundColor:'#FFFCF4', height: 150, width: 150, resizeMode: 'stretch', borderRadius: 5}} />
+            <View style={{flex:1, flexDirection:'row', justifyContent:'space-around', paddingLeft:10, borderColor:'gray', alignItems: 'flex-start', backgroundColor:'transparent'}}>
+              <TouchableOpacity onPress={()=>this.selectPhoto((uri)=>this.setState({Imguri1:uri}))}>
+                <Image source={{uri: this.state.Imguri1}} style={{borderWidth:1, borderColor:'#C8C8C8', backgroundColor:'#FFFCF4', height: 75, width: 100, resizeMode: 'stretch', borderRadius: 5}} />
+              </TouchableOpacity>    
+              <TouchableOpacity onPress={()=>this.selectPhoto((uri)=>this.setState({Imguri2:uri}))}>
+                <Image source={{uri: this.state.Imguri2}} style={{borderWidth:1, borderColor:'#C8C8C8', backgroundColor:'#FFFCF4', height: 75, width: 100, resizeMode: 'stretch', borderRadius: 5}} />
+              </TouchableOpacity>    
+              <TouchableOpacity onPress={()=>this.selectPhoto((uri)=>this.setState({Imguri3:uri}))}>
+                <Image source={{uri: this.state.Imguri3}} style={{borderWidth:1, borderColor:'#C8C8C8', backgroundColor:'#FFFCF4', height: 75, width: 100, resizeMode: 'stretch', borderRadius: 5}} />
               </TouchableOpacity>    
             </View>
             <Text style={styles.inputlabel}> 
@@ -402,7 +373,7 @@ const styles = StyleSheet.create({
     marginRight:10, 
     marginTop:0, 
     borderRadius:5, 
-    height: 80,
+    height: 160,
     width:lebar-50,  
     paddingLeft:5, 
     fontSize:16, 

@@ -43,7 +43,12 @@ export default class EasyTransportScreen extends React.Component {
   showShuttleBusZoomScreen=(vID,vScreenTitle,vScreenColor)=>{
     this.props.navigation.navigate("ShuttleBusZoom", {ID:vID, ScreenTitle:vScreenTitle, ScreenColor:vScreenColor});
   }
- 
+
+  showEasyTransportBusTrackScreen=(vID)=>{
+    this.props.navigation.navigate("EasyTransportBusTrack", {busID:vID});
+  }
+  
+
   render() {
     this.lebar = Dimensions.get('window').width;  
     this.tinggi = Dimensions.get('window').height;
@@ -51,7 +56,7 @@ export default class EasyTransportScreen extends React.Component {
       <View style={styles.container}>
         <ScrollView style={styles.ScrollView} contentContainerStyle={styles.contentContainer}>
           <View style={{alignItems: 'center', marginTop: 2, marginBottom: 20}}>
-              <Text  style={{color:'cornflowerblue', fontFamily : 'Verdana',  paddingTop: 15, height:45, width:this.lebar, textAlign:'center', textAlignVertical:'center', fontSize:26,  backgroundColor: 'transparent'}}>
+              <Text  style={{color:'cornflowerblue',  paddingTop: 15, height:45, width:this.lebar, textAlign:'center', textAlignVertical:'center', fontSize:26,  backgroundColor: 'transparent'}}>
               Shuttle Sentul
               </Text>
             <Image style={{width:this.lebar, height:20+this.lebar*540/1305, resizeMode: 'contain'}}
@@ -70,7 +75,7 @@ export default class EasyTransportScreen extends React.Component {
                 <TouchableOpacity onPress={()=>this.showShuttleRouteScreen('101','Yellow Line','#ffba00')}>
                     <Image source={require('../assets/images/ButtonRute.png')} style={{marginTop: 15, marginRight:10, width:50, height:75,  paddingTop:10}}/>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={()=>this.showShuttleBusZoomScreen('101','Yellow Line','#ffba00')}>
+                <TouchableOpacity onPress={()=>this.showEasyTransportBusTrackScreen('101')}>
                     <Image source={require('../assets/images/ButtonLacak.png')} style={{marginTop: 15, width:50, height:75,  paddingTop:10}}/>
                 </TouchableOpacity>
             </View>
@@ -82,7 +87,7 @@ export default class EasyTransportScreen extends React.Component {
                 <TouchableOpacity onPress={()=>this.showShuttleRouteScreen('102','Red Line','tomato')}>
                     <Image source={require('../assets/images/ButtonRute.png')} style={{marginTop: 15, marginRight:10, width:50, height:75,  paddingTop:10}}/>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={()=>this.showShuttleBusZoomScreen('102','Red Line','tomato')}>
+                <TouchableOpacity onPress={()=>this.showEasyTransportBusTrackScreen('102')}>
                     <Image source={require('../assets/images/ButtonLacak.png')} style={{marginTop: 15, width:50, height:75,  paddingTop:10}}/>
                 </TouchableOpacity>
             </View>
@@ -94,7 +99,7 @@ export default class EasyTransportScreen extends React.Component {
                 <TouchableOpacity onPress={()=>this.showShuttleRouteScreen('103','Green Line','mediumseagreen')}>
                     <Image source={require('../assets/images/ButtonRute.png')} style={{marginTop: 15, marginRight:10, width:50, height:75,  paddingTop:10}}/>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={()=>this.showShuttleBusZoomScreen('102','Green Line','mediumseagreen')}>
+                <TouchableOpacity onPress={()=>this.showEasyTransportBusTrackScreen('103')}>
                     <Image source={require('../assets/images/ButtonLacak.png')} style={{marginTop: 15, width:50, height:75,  paddingTop:10}}/>
                 </TouchableOpacity>
             </View>
@@ -124,7 +129,7 @@ export default class EasyTransportScreen extends React.Component {
                 <TouchableOpacity onPress={()=>this.showShuttleRouteScreen('100','Shuttle Bandara','silver')}>
                     <Image source={require('../assets/images/ButtonRute.png')} style={{marginTop: 15, marginRight:10, width:50, height:75,  paddingTop:10}}/>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={()=>this.showShuttleBusZoomScreen('100','Shuttle Bandara','silver')}>
+                <TouchableOpacity onPress={()=>this.showShuttleBusZoomScreen('101','Yellow Line','#ffba00')}>
                     <Image source={require('../assets/images/ButtonLacak.png')} style={{marginTop: 15, width:50, height:75,  paddingTop:10}}/>
                 </TouchableOpacity>
             </View>

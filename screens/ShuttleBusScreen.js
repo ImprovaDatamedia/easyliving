@@ -55,7 +55,7 @@ showShuttleBusZoomScreen=()=>{
 }
 
   render() {
-    let lebar = 1.0*Dimensions.get('window').width;  
+    let lebar = Dimensions.get('window').width;  
     let tinggi = lebar * 1182/1830;
     return (
       <View style={{flex: 1,}}>

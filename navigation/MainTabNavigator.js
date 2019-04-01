@@ -34,7 +34,12 @@ import EasyPhoneAddScreen from '../screens/EasyPhoneAddScreen';
 import EasyWebBrowserScreen from '../screens/EasyWebBrowserScreen';
 import EasyMartBarangDetailScreen from '../screens/EasyMartBarangDetail';
 import EasyMartKeranjangScreen from '../screens/EasyMartKeranjangScreen';
-import FormLogin from '../screens/LoginScreen';
+import KetentuanScreen from '../screens/KetentuanScreen';
+import EasyTransportBusTrackScreen from '../screens/EasyTransportBusTrackScreen';
+import EasyTradeScreen from '../screens/EasyTradeScreen';
+import EasyTradePasangScreen from '../screens/EasyTradePasangScreen';
+import EasyTradeDetailScreen from '../screens/EasyTradeDetailScreen';
+import EasyTradePasangConfirmScreen from '../screens/EasyTradePasangConfirmScreen';
 
 
 
@@ -65,6 +70,12 @@ const HomeStack = createStackNavigator({
   EasyWebBrowser : EasyWebBrowserScreen,
   EasyMartBarangDetail : EasyMartBarangDetailScreen,
   EasyMartKeranjang : EasyMartKeranjangScreen,
+  Ketentuan : KetentuanScreen,
+  EasyTransportBusTrack : EasyTransportBusTrackScreen,
+  EasyTrade : EasyTradeScreen,
+  EasyTradePasang : EasyTradePasangScreen,
+  EasyTradeDetail : EasyTradeDetailScreen,
+  EasyTradePasangConfirm : EasyTradePasangConfirmScreen,
 });
 
 
@@ -99,13 +110,15 @@ const InboxStack = createStackNavigator({
   Inbox: InboxScreen,
 });
 
+const BadgedIcon = withBadge(2, { status: "success", left: 25 })(Icon)
+
 InboxStack.navigationOptions = {
   tabBarLabel: 'Inbox',
   tabBarIcon: ({ focused }) => (
-    <TabBarIcon
-      focused={focused}
-      name={Platform.OS === 'ios' ? 'ios-mail' : 'md-mail'}
-    />
+    <BadgedIcon 
+      type="ionicon" 
+      color={focused==true? "#5c93d8":"#cbcbcb"} 
+      name={Platform.OS === 'ios' ? 'ios-mail' : 'md-mail'} />
   ),
 };
 
@@ -128,7 +141,7 @@ ContactUsStack.navigationOptions = {
 
 const AccountStack = createSwitchNavigator({
   Account: AccountScreen,
-  loginForm: FormLogin
+//  login: FormLogin
 });
 
 AccountStack.navigationOptions = {

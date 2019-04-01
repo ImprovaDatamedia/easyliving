@@ -20,59 +20,93 @@ import { Dropdown } from 'react-native-material-dropdown';
 import Modal from "react-native-modal";
 import EasyRentKategoriList from "./EasyLivingComp.js";
 import {KeyboardAwareScrollView}  from 'react-native-keyboard-aware-scroll-view'
-import { ImagePicker, Permissions } from 'expo';
+import {ImagePicker, Permissions } from 'expo';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { Button } from 'react-native-elements';
-import {DBViewList, DBFlatList, updateTable} from '../components/react-native-improva.js'
+import {Button, CheckBox} from 'react-native-elements';
+import {DBFlatList, HideableView, updateTable, updateTableCrypto, queryTable} from '../components/react-native-improva.js'
+import localStorage from 'react-native-sync-localstorage'
 
-
-let namaWaktu = ['jam','hari','minggu','bulan'];
 let lebar =  Dimensions.get('window').width; 
-
 
 export default class EasyPhoneAddScreen extends React.Component {
 
-  colorPalette = ['#F4FDE6', '#F8EEDF', '#D6F3F4', '#D3E3FF', '#ABB0E5', '#D3CBF4', ,
+  colorPalette = ['#FFFFFF', '#F4FDE6', '#D6F3F4', '#D3E3FF', '#ABB0E5', '#D3CBF4', 
                   '#FAEBFF', '#FFE1DE', '#FFDECD', '#FFFBE6', '#FFF2D9', '#FFFBD9']
+  param = [];
 
   static navigationOptions = ({ navigation }) => {
     return{
-      title: "Tambah Contact",
+      title: "Tambah/Edit Contact",
       headerStyle: {backgroundColor: '#e7e9df'},
     };
   };
 
-  constructor(props) {
-    super(props);
-    this.state={
-      isKategoriModalVisible : false,
-      kategoriID : 1,
-      kategoriNama : '',
-      warnaID : 3,
-      warnaColor : '#ffffff '
-    }     
+  getWarnaID=(warnaColor)=>{
+    vIndex=0;
+    this.colorPalette.map((warna, index)=>{
+      if(warna==warnaColor){vIndex=index}
+    });
+    return vIndex;  
   }
 
-  showEasyRentKategoriScreen=()=>{
-    this.props.navigation.navigate("EasyRentKategori", {callerScreen:"EasyRentPasang"});
-  }   
+  constructor(props) {
+    super(props);
+    const {kategoriID, kategoriNama, Data} = this.props.navigation.state.params;
+    vWarna = Data==undefined?'#ffffff':Data.BackColor;
+    this.state={
+      cbState : Data==undefined?false:Data.Level==1,
+      kategoriID : kategoriID==undefined?Data.KategoriID:kategoriID,
+      kategoriNama : kategoriNama==undefined?"Kategori":kategoriNama,
+      warnaColor : vWarna,
+      warnaID : this.getWarnaID(vWarna),
+      arrKategori : [],
+    }
+    if(Data!=undefined){
+      this.param = Data;
+    }
+    queryTable('select * from easyliving.tbphonekategori order by ID asc')
+      .then((response) => response.json())
+      .then((responseJson) => { 
+        this.setState({arrKategori:responseJson});
+    }).catch((error)=> console.error(error));
+  }    
+
+
+  componentDidMount(){
+    this._sub = this.props.navigation.addListener('didFocus',this._componentFocused);
+  }
+       
+  componentWillUnmount() {
+    this._sub.remove();
+  }
+        
+  _componentFocused = () => {
+    if(localStorage.getItem('userToken')==''){
+      Alert.alert('Info','Anda harus login untuk bisa menambahkan contact');
+      this.props.navigation.navigate("Account",{callerScreen:"EasyPhoneAdd", cancelScreen:'EasyPhoneNumber'});
+    }    
+  }  
 
 
   drawItem = (item) => {
+    var vArr = (item.Number).split(',');     
     return(
-      <TouchableOpacity onPress={()=>this.kategorySelected(item)}>
-      <View key={item.ID} style={{flex:1, height:40, flexDirection:"row", alignItems:'center', marginBottom:2, marginLeft:2, marginRight:2, borderRadius:3, backgroundColor:'white'}}>
-          <Text  style={{color:'gray', marginLeft:10, fontSize:18, fontWeight:'normal', backgroundColor: 'transparent'}}>
-              {item.Nama}
+        <View style={{flex:1, height:item.Level==1?100:70, flexDirection:"column",  paddingTop:10, paddingLeft: 10, marginBottom:2, marginLeft:0, marginRight:0, backgroundColor:item.Level==1?item.BackColor:this.strip==0?'white':'#f9f9f9'}}>
+          <Text style={{flex:0.5, color:'#404040', textAlign:'left', textAlignVertical:'top', fontSize:18, fontWeight:item.Level==1?'bold':'normal', backgroundColor: 'transparent'}}>
+            {item.Nama}
           </Text>
-      </View>  
-      </TouchableOpacity> 
+          <Text style={{color:'#505050', width:lebar, textAlign:'left', textAlignVertical:'top', fontSize:14, backgroundColor: 'transparent'}}>
+            {item.Level==1?item.Deskripsi:''}
+          </Text>
+          <View style={{flex:0.5, flexDirection:"row", justifyContent:"flex-end", alignItems:'flex-end', paddingBottom:10, backgroundColor: 'transparent'}}>
+            <Text style={{color:'darkmagenta', paddingRight:10, textAlign:'right', fontSize:16, fontWeight:'bold', backgroundColor: 'transparent'}}>
+              {item.Number}
+            </Text>
+          </View>
+        </View>   
     )
   }
-
-  inputChangeText=(text,InputID)=>{
-    this.cariText = text;
-  }   
+ 
 
   selectPhoto=()=>{
     Alert.alert(
@@ -122,46 +156,58 @@ export default class EasyPhoneAddScreen extends React.Component {
     console.log('galeri: '+this.state.srcImg)
   };
     
+  onUpdateResult(result){
+    if(result='success'){Alert.alert('Sucess','Contact telah berhasil disimpan')}
+    else {Alert.alert('Fail','Contact gagal disimpan')}
+  }
 
   submitContact=()=> {
     var moment = require('moment');
-    vTangal = moment(new Date()).format("YYYY-MM-DD HH:mm:ss");
-    var query = "INSERT INTO easyliving.tbphone (KategoriID, Nama, Number, Level, Deskripsi, BackColor, AddBy, AddOn) VALUES ('"+this.state.kategoriID+"', '"+this.refs.Nama._lastNativeText+"', '"+this.refs.Number._lastNativeText+"', '"+1+"', '"+this.refs.Deskripsi._lastNativeText+"', '"+this.state.warnaColor+"', '"+1+"', '"+vTanggal+"');"
+    vTanggal = moment(new Date()).format("YYYY-MM-DD HH:mm:ss");
+    let vUserID = localStorage.getItem('userData').ID
+    let vKategori = this.refs.Kategori.value();
+    let vNama = this.refs.Nama._lastNativeText;
+    let vNumber = this.refs.Number._lastNativeText;
+    if(vNama==undefined){vNama = this.param.Nama};
+    if(vNumber==undefined){vNumber = this.param.Number};
+    let vLevel=0
+    if(this.state.cbState){
+      vLevel=1;
+      var vDeskripsi = this.refs.Deskripsi._lastNativeText;
+      if(vDeskripsi==undefined){vDeskripsi=this.param.Deskripsi};
+      var vColor = this.state.warnaColor;
+    }
+    console.log('level: '+vLevel)
+    if(this.param.length!=0){
+      console.log('update contact');
+      if(vLevel==0){
+        var query = 'UPDATE easyliving.tbphone SET KategoriID='+vKategori+', Nama="'+vNama+'", Number="'+vNumber+'", Level='+vLevel+', EditBy='+vUserID+', EditOn="'+vTanggal+'" WHERE ID='+this.param.ID;
+      } else {
+        var query = 'UPDATE easyliving.tbphone SET KategoriID='+vKategori+', Nama="'+vNama+'", Number="'+vNumber+'", Level='+vLevel+', Deskripsi="'+vDeskripsi+'", BackColor="'+vColor+'", EditBy='+vUserID+', EditOn="'+vTanggal+'" WHERE ID='+this.param.ID;
+      }
+        updateTableCrypto(query,()=>Alert.alert('Success','Perubahan telah berhasil disimpan'),()=> Alert.alert('Error','Perubahan gagal disimpan'));
+    } else {
+      console.log('insert contact');
+      if(vLevel==0){
+        var query = "INSERT INTO easyliving.tbphone (KategoriID, Nama, Number, Level, AddBy, AddOn) VALUES ('"+vKategori+"', '"+vNama+"', '"+vNumber+"', '"+vLevel+"', '"+vUserID+"', '"+vTanggal+"');"
+      } else {
+        var query = "INSERT INTO easyliving.tbphone (KategoriID, Nama, Number, Level, Deskripsi, BackColor, AddBy, AddOn) VALUES ('"+vKategori+"', '"+vNama+"', '"+vNumber+"', '"+vLevel+"', '"+vDeskripsi+"', '"+vColor+"', '"+vUserID+"', '"+vTanggal+"');"
+      }
+        updateTable(query,this.onUpdateResult);//){Alert.alert('Sucess','Contact berhasil ditambahkan')}else{Alert.alert('Error','Contact gagal ditambahkan')}
+    }  
     console.log(query)
-    if(updateTable(query)){Alert.alert('Sucess','Contact berhasil ditambahkan')}else{Alert.alert('Error','Contact gagal ditambahkan')}
+    this.props.navigation.state.params.onGoBack('from add contact');
+    this.props.navigation.goBack();
   }
 
-  toggleKategoriModalVisible = () =>
-    this.setState({ isKategoriModalVisible: !this.state.isKategoriModalVisible});
-
-  kategorySelected(item){
-    this.setState({kategoriID:item.ID, kategoriNama:item.Nama});
-    this.setState({isKategoriModalVisible:false});
-  }
 
   warnaSelected=(warna,index)=>{
     this.setState({warnaID:index, warnaColor:warna})
   }
 
-  writeKategori=(kategoriID, kategoriNama)=>{
-      return(
-        <View style={{flexDirection:'row', justifyContent:'stretch'}}>
-        <Text  style={{color:'#606060', width:80, height:50, paddingTop:22, fontSize:14, backgroundColor: 'transparent'}}>
-          Kategori
-        </Text>
-        <Text  style={{color:'black', width:lebar-170, height:50, paddingTop:20, textAlign:'left',  marginLeft:0, paddingLeft:0, fontSize:16, backgroundColor: 'transparent'}}>
-          {kategoriNama}
-        </Text>  
-        <Text style={{color:'#a3a3a3', width:50, height:50, textAlign:'right', paddingTop:24, fontSize:16, backgroundColor: 'transparent'}}>
-        ▼
-        </Text> 
-        </View> 
-      )
-    }
-
   render() {
     let lebar =  Dimensions.get('window').width; 
-    let arrSatuanWaktu = [{value:'perjam'},{value:'perhari'},{value:'perminggu'},{value:'perbulan'}];
+    console.log('render lg');
     return (
       <View style={{flex:1,  backgroundColor: 'white'}}>
         <KeyboardAwareScrollView
@@ -171,62 +217,59 @@ export default class EasyPhoneAddScreen extends React.Component {
             extraHeight={Platform.select({ android: 200 })}
         >      
         <ScrollView style={{flex:1, marginLeft:0, paddingTop:5, paddingLeft:0, paddingRight:0, backgroundColor:'white'}}>   
-
-        <Modal 
-              style={{borderRadius:5, justifyContent:'center', alignItems:'center'}} 
-              backdropColor='gray' 
-              isVisible={this.state.isKategoriModalVisible}
-              onBackdropPress={() => this.setState({isKategoriModalVisible: false })}>
-              <View style={{height:378, width:300, borderRadius:5, backgroundColor:'white'}}> 
-              <View style={{height:40, alignItems:'center', justifyContent:'center', backgroundColor:'cornsilk'}}>
-                <Text style={{fontSize:20}}>Pilih Kategori</Text>
-              </View>
-              <DBFlatList style={{flex:1, paddingTop:2, paddingLeft:0, paddingRight:0, backgroundColor:'#f0f0f0'}}
-                  query = 'SELECT * FROM easyliving.tbphonekategori '
-                  onRenderItem={(item) => this.drawItem(item)}
-                  onTableEmpty={()=>(<View><Text>Empty</Text></View>)}
-                />
-              </View>
-            </Modal>
-          <View style={{flex:1, alignItems:'left', paddingLeft:20, paddingRight:20, backgroundColor:'white'}}>
-            <TouchableOpacity onPress={this.toggleKategoriModalVisible}>
-              <View style={{flexDirection:'column', alignItems:'stretch', justifyContent:'flex-end', backgroundColor:'white'}}>
-                <View style={{height:10, width:300, backgroundColor:'transparent'}}/>
-                {this.writeKategori(this.state.kategoriID, this.state.kategoriNama)}
-                <View style={{height:1,marginLeft:10, backgroundColor:'#d3d3d3'}}/>
-                <View style={{height:8,backgroundColor:'transparent'}}/>
-              </View>
-            </TouchableOpacity>
+          <View style={{flex:1, alignItems:'flex-start', paddingLeft:20, paddingRight:20, backgroundColor:'white'}}>
+            <Text style={styles.inputlabel}> 
+              Kategori</Text>
+            <Dropdown 
+              dropdownOffset={{left:15, top:5}}
+              rippleCentered={true}
+              inputContainerStyle={{ borderBottomColor: 'transparent' }}
+              containerStyle={{backgroundColor:'#FFFCF4', borderWidth:1, borderColor:'lightgrey', borderRadius:5, width:lebar-50, marginLeft:10, marginRight:10, paddingLeft:5}}
+              ref="Kategori" 
+              pickerStyle={{backgroundColor: '#f7f9ef', marginRight:20}}
+              itemCount={5}
+              value={this.param.length!=0?this.param.KategoriID:this.state.kategoriID}
+              valueExtractor={({ID}) => value=ID}
+              labelExtractor={({Nama}) => label=Nama}
+              data={this.state.arrKategori}
+            />
             <Text style={styles.inputlabel}> 
                 Nama</Text>
             <TextInput style={styles.textinputsingleline}
               ref="Nama"
+              defaultValue = {this.param.Nama}
               underlineColorAndroid="transparent"
-              onChangeText = {(text) => { this.inputChangeText(text, 'Nama');}}
-              onChangeText={this.cariChangeText}
-              onSubmitEditing={this.cariBarang}
+              autoCapitalize="words"
             />
             <Text style={styles.inputlabel}> 
                 Nomor</Text>
             <TextInput style={styles.textinputsingleline}
               ref="Number"
               underlineColorAndroid="transparent"
-              onChangeText = {(text) => { this.inputChangeText(text, 'Nomor');}}
-              onChangeText={this.cariChangeText}
-              onSubmitEditing={this.cariBarang}
+              defaultValue = {this.param.Number}
+              keyboardType="numbers-and-punctuation"
             />
-            <Text style={styles.inputlabel}> 
+            <CheckBox 
+              containerStyle={{backgroundColor:'transparent', borderWidth:0}}
+              textStyle={{fontWeight:'normal'}}
+              title='Highlighted'
+              checked={this.state.cbState}
+              onPress={() => this.setState({cbState: !this.state.cbState})}
+            />  
+            <HideableView hide={!this.state.cbState}>
+            <Text style={styles.inputlabelpendek}> 
               Deskripsi</Text>
             <TextInput style={styles.textinputmultiline}
               ref="Deskripsi"
+              defaultValue = {this.param.Deskripsi}
               underlineColorAndroid="transparent"
-              autoCapitalize="none"
+              autoCapitalize="sentences"
               multiline={true}
-              onChangeText={this.cariChangeText}
-              onSubmitEditing={this.cariBarang}
+              onChangeText={null}
+              onSubmitEditing={null}
             />
             <Text style={styles.inputlabel}> 
-              Warna Background</Text>
+              Background</Text>
             <View style={{width:lebar-40, height:50, flexDirection:'row', justifyContent:"space-around"}}>
               {this.colorPalette.map((warna, index)=>{if(index<6){
                 return(
@@ -247,10 +290,12 @@ export default class EasyPhoneAddScreen extends React.Component {
                   </TouchableOpacity>
                 )
               }})}
+              
             </View>
-            <View style={{height:60}}></View>
-            <View style={{flex:1, flexDirection:'row', justifyContent:'center'}}>
-              <Button buttonStyle={{height:40, width:100, backgroundColor:'mediumseagreen'}}
+            </HideableView>
+            <View style={{height:40}}></View>
+            <View style={{flex:1, flexDirection:'row', alignItems:'center', justifyContent:'center'}}>
+              <Button buttonStyle={{height:50, width:lebar-40, backgroundColor:'mediumseagreen'}}
                 raised
                 onPress={this.submitContact}
                 title="Submit"
@@ -281,6 +326,13 @@ const styles = StyleSheet.create({
     fontSize:14, 
     height:45,
     paddingTop: 20,
+    backgroundColor:'transparent'
+  },
+  inputlabelpendek: {
+    color:'#606060', 
+    fontSize:14, 
+    height:25,
+    paddingTop: 0,
     backgroundColor:'transparent'
   },
   textinputsingleline: {

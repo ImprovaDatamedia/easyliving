@@ -5,15 +5,17 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  Image,
   View,
   Dimensions,
 } from 'react-native';
 import {DBText, ImageAlter, ActionIconButton, DisplayHarga, updateTable, RupiahFormat} from "../components/react-native-improva.js"
-import localStorage from 'react-native-sync-localstorage'
+import localStorage from 'react-native-sync-localstorage';
+import Slideshow from 'react-native-image-slider-show';
 
+let imgPath = 'https://www.easyliving.id/app/assets/image/';
 
-
-export default class EasyRentDetailScreen extends React.Component {
+export default class EasyTradeDetailScreen extends React.Component {
   
   needRefresh = false;
   kategoriNama = '';
@@ -29,8 +31,9 @@ export default class EasyRentDetailScreen extends React.Component {
     super(props);
     this.state={
       param : this.props.navigation.getParam('Data', []),
-    }     
-  }
+    };      
+  }     
+  
 
   componentDidMount(){
     this._sub = this.props.navigation.addListener('didFocus',this._componentFocused);
@@ -43,10 +46,10 @@ export default class EasyRentDetailScreen extends React.Component {
   _componentFocused = () => {
     if(localStorage.getItem('userToken')==''){
       Alert.alert('Maaf','Anda harus login untuk bisa melihat detail iklan');
-      this.props.navigation.navigate("Account",{callerScreen:"EasyRentDetail", cancelScreen:'EasyRent'});
+      this.props.navigation.navigate("Account",{callerScreen:"EasyTradeDetail", cancelScreen:'EasyTrade'});
     }  
     if(this.needRefresh) {
-      queryTable('select * from easyliving.tbeasyrent where ID='+this.state.param.ID)
+      queryTable('select * from easyliving.tbeasytrade where ID='+this.state.param.ID)
         .then((response) => response.json())
         .then((responseJson) => {
           let vjs = responseJson;
@@ -55,6 +58,7 @@ export default class EasyRentDetailScreen extends React.Component {
         this.needRefresh = false;
     }
   }
+
 
   onGoBack = (data) => {
     console.log('onGoBack');
@@ -78,7 +82,7 @@ export default class EasyRentDetailScreen extends React.Component {
 
   deleteItem=()=>{
     let whereQuery = this.props.navigation.getParam('whereQuery',''); 
-    query = "DELETE FROM easyliving.tbeasyrent WHERE ID="+this.state.param.ID;
+    query = "DELETE FROM easyliving.tbeasytrade WHERE ID="+this.state.param.ID;
     if(updateTable(query))
     {
       alert('Data berhasil dihapus');
@@ -86,7 +90,7 @@ export default class EasyRentDetailScreen extends React.Component {
       if(this.props.navigation.state.params.onGoBack!=undefined){
         this.props.navigation.state.params.onGoBack('from delete');
       }
-      this.props.navigation.navigate('EasyRent',{whereQuery:whereQuery})
+      this.props.navigation.navigate('EasyTrade',{whereQuery:whereQuery})
     }else{alert('Gagal')};
   }
 
@@ -95,10 +99,23 @@ export default class EasyRentDetailScreen extends React.Component {
     item = this.state.param;
     item['KategoriNama'] = this.kategoriNama;
     console.log('item on detail: '+JSON.stringify(item))
-    this.props.navigation.navigate("EasyRentPasang", {Data:item, onGoBack:this.props.navigation.state.params.onGoBack});
+    this.props.navigation.navigate("EasyTradePasang", {Data:item, onGoBack:this.props.navigation.state.params.onGoBack});
   }
 
+  _renderItem = ( {item, index} ) => {
+    console.log("rendering,", index, item)
+    return (
+        <View Style={{justifyContent:'center', alignItems: 'center', height:300, width: 256}}>
+            <Image style={{width: 256, height: 144, borderRadius:10}} source={{ uri: item.thumbnail }} />
+            {/*<NextVideoImage source={{ uri: this.state.currentVideo.nextVideoId }}/>*/}
+            <Text>{item.title}</Text>
+        </View>
+    );
+  }
+
+
   render() {
+
     let lebar =  Dimensions.get('window').width; 
     if(this.state.param.MinWaktu>1){minWaktuSewa='minimum: '+this.state.param.MinWaktu+' '+this.state.param.SatuanWaktu} else {minWaktuSewa=''};
     if(this.state.param.MaxWaktu!=0){maxWaktuSewa='maximum: '+this.state.param.MaxWaktu+' '+this.state.param.SatuanWaktu} else {maxWaktuSewa=''};
@@ -108,7 +125,7 @@ export default class EasyRentDetailScreen extends React.Component {
     let vQueryKategori = 'SELECT Nama AS Value FROM easyliving.tbeasyrentkategori WHERE ID='+this.state.param.KategoriID+';';
     console.log('hallo');
     return (
-      <View style={{flex:1, marginBottom:10, backgroundColor: 'white'}}>
+      <View style={{flex:1, marginBottom:5, backgroundColor: 'white'}}>
          <View style={{justifyContent: 'space-around', flexDirection:"row", height:60, paddingTop:5, alignItems:'center',  backgroundColor:'#f4f4f4'}}>
           <ActionIconButton name="blank"/>
           <ActionIconButton name="blank"/>
@@ -116,76 +133,68 @@ export default class EasyRentDetailScreen extends React.Component {
           <ActionIconButton  color='#606060' backgroundColor='#f4f4f4' fontColor='#404040' onPress={this.editItem} name="edit" label='Edit'/>
           <ActionIconButton  color='#606060' backgroundColor='#f4f4f4' fontColor='#404040' onPress={this.askDeleteItem} name="trash-o" label='Delete'/>
         </View>
-        <View style={{width:lebar, height:1, backgroundColor:'lightgray'}}/>
-      <ScrollView  style={{flex:1, backgroundColor:'#f8f8f8'}}>
-          <View style={{margin:5, width:lebar-10, height:lebar-70, backgroundColor:'white'}}>
-            <ImageAlter 
-              source={{uri: 'http://www.easyliving.id:81/app/assets/image/'+this.state.param.Gambar}} 
-              defaultSource={require('../assets/images/NoImage.png')}
-              style={{flex:1, margin:0, borderRadius:5, }}/>
+        <View style={{height:1, backgroundColor:'lightgray'}}/>
+        <ScrollView  style={{flex:1, backgroundColor:'#f4f4f4'}}>
+          <View style={{margin:5, height:lebar-70, borderRadius:5, justifyContent:'center', alighItems:'center', backgroundColor:'white'}}>
+          <Slideshow 
+            dataSource={[
+              {url: 'http://www.easyliving.id:81/app/assets/image/'+this.state.param.Gambar1},
+              {url: 'http://www.easyliving.id:81/app/assets/image/'+this.state.param.Gambar2},
+              {url: 'http://www.easyliving.id:81/app/assets/image/'+this.state.param.Gambar3},
+            ]}
+            height={lebar*3/4}
+          />     
+
           </View>
-          <View style={{height:180, paddingLeft:10, paddingTop:10, paddingBottom:10, paddingRight:10, borderRadius:0, backgroundColor:'#fcfcfc'}}>
-          <Text style={{color:'gray', marginTop:5, textAlign:'left', textAlignVertical:'top', fontSize:20, fontWeight:'bold', backgroundColor: 'transparent'}}>
-            {this.state.param.NamaBarang}
-          </Text>
+          <View style={{margin:5,  borderRadius:5, backgroundColor:'#fcfcfc'}}>
+            <Text style={{color:'gray', marginLeft:10, marginTop:5, textAlign:'left', textAlignVertical:'top', fontSize:20, fontWeight:'bold', backgroundColor: 'transparent'}}>
+              {this.state.param.Nama}
+            </Text>
             <View style={{height:10}}/>
-          <Text style={{color:'gray', marginTop:5, textAlign:'left', textAlignVertical:'top', fontSize:18, backgroundColor: 'transparent'}}>
-            {this.state.param.Deskripsi}
-          </Text>
-          <View style={{height:20}}/>
-          <Text  style={{color:'gray', textAlign:'left', textAlignVertical:'center', fontSize:16, fontWeight:'normal', backgroundColor: 'transparent'}}>
-            {'Tarif sewa: '}
-           <Text  style={{color:'darkmagenta', textAlign:'left', textAlignVertical:'center', fontSize:16, fontWeight:'bold', backgroundColor: 'transparent'}}>
-              {RupiahFormat(this.state.param.Harga)}
-            </Text> {'/'+this.state.param.SatuanWaktu}
-          </Text>
-          <Text  style={{color:'gray', textAlign:'left', textAlignVertical:'center', fontSize:16, fontWeight:'normal', backgroundColor: 'transparent'}}>
-            {'                    '}
-            <Text  style={{color:'darkmagenta', textAlign:'left', textAlignVertical:'center', fontSize:16, fontWeight:'normal', backgroundColor: 'transparent'}}>
-              {minWaktuSewa}
+            <Text style={{color:'gray', marginLeft:10, marginRight:10, marginTop:5, marginBottom:10, textAlign:'left', textAlignVertical:'top', fontSize:18, backgroundColor: 'transparent'}}>
+              {this.state.param.Deskripsi}
             </Text>
-          </Text>
-          <Text  style={{color:'gray', textAlign:'left', textAlignVertical:'center', fontSize:16, fontWeight:'normal', backgroundColor: 'transparent'}}>
-            {'                    '}
-            <Text  style={{color:'darkmagenta', textAlign:'left', textAlignVertical:'center', fontSize:16, fontWeight:'normal', backgroundColor: 'transparent'}}>
-              {maxWaktuSewa}
+          </View>
+          <View style={{margin:5, paddingLeft:10, paddingTop:20, paddingBottom:10, paddingRight:10, borderRadius:5, backgroundColor:'white'}}>
+            <Text  style={{color:'gray', textAlign:'left', textAlignVertical:'center', fontSize:16, fontWeight:'normal', backgroundColor: 'transparent'}}>
+            {'Harga: '}
+              <Text  style={{color:'darkmagenta', textAlign:'left', textAlignVertical:'center', fontSize:16, fontWeight:'bold', backgroundColor: 'transparent'}}>
+                {RupiahFormat(this.state.param.Harga)}
+              </Text>
             </Text>
-          </Text>
-          <View style={{height:20}}/>
+          <View style={{height:15}}/>
           <Text  style={{color:'gray', textAlign:'left', textAlignVertical:'center', fontSize:16, fontWeight:'normal', backgroundColor: 'transparent'}}>
             {'Kategori: '}
-            <DBText query={vQueryKategori} onGetText={(text)=> {this.kategoriNama=text}} style={{color:'darkmagenta'}}/>
+            <DBText query={vQueryKategori} onGetText={(text)=> {this.kategoriNama=text}} style={{color:'dodgerblue'}}/>
           </Text>
-          <View style={{height:20}}/>
+          <View style={{height:15}}/>
           <Text  style={{color:'gray', textAlign:'left', textAlignVertical:'center', fontSize:16, fontWeight:'normal', backgroundColor: 'transparent'}}>
             {'Dipasang oleh: '}
-            <DBText query={vQuery} style={{color:'darkmagenta'}}/>
+            <DBText query={vQuery} style={{color:'dodgerblue'}}/>
           </Text>
-          <View style={{height:20}}/>
+          <View style={{height:15}}/>
           <Text  style={{color:'gray', textAlign:'left', textAlignVertical:'center', fontSize:16, fontWeight:'normal', backgroundColor: 'transparent'}}>
-            {'Pada Tanggal: '}
-            <Text style={{color:'darkmagenta'}}>
+            {'Pada tanggal: '}
+            <Text style={{color:'dodgerblue'}}>
               {vDate}
             </Text>
           </Text>
-          <View style={{height:20}}/>
+          <View style={{height:15}}/>
           <Text  style={{color:'gray', textAlign:'left', textAlignVertical:'center', fontSize:16, fontWeight:'normal', backgroundColor: 'transparent'}}>
-            {'Hubungi pemasang iklan di No: '}
-            <Text style={{color:'darkmagenta'}}>
+            {'Hubungi pemasang iklan di no.: '}
+            <Text style={{color:'dodgerblue'}}>
               {this.state.param.NoContact}
             </Text>
           </Text>
-          <View style={{height:50}}/>
+          <View style={{height:60}}/>
         </View>
-        <View style={{height:140}}/>
-
-
       </ScrollView>
       </View>   
     );
   }
 
 }
+
 
 const styles = StyleSheet.create({
   container: {

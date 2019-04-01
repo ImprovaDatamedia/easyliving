@@ -23,7 +23,8 @@ import MaterialsIcon from 'react-native-vector-icons/MaterialIcons';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { Button } from 'react-native-elements';
 import { ImageManipulator } from 'expo';
-import {updateTable} from '../components/react-native-improva.js';
+import {updateTable, uploadImage} from '../components/react-native-improva.js';
+import Slideshow from 'react-native-image-slider-show';
 
 
 export default class EasyRentPasangConfirmScreen extends React.Component {
@@ -36,18 +37,37 @@ export default class EasyRentPasangConfirmScreen extends React.Component {
     }
   };
  
+//  if(updateTable(query)){Alert.alert('Sucess','Iklan berhasil dipasang')}else{Alert.alert('Error','Iklan gagal dipasang')}
+
+  onUpdateResult(result){
+    if(result='success'){Alert.alert('Sucess','Iklan telah berhasil disimpan')}
+    else {Alert.alert('Fail','Iklan gagal disimpan')}
+  }
 
   confirmPasang=()=>{
-    // const {params} = this.props.navigation.state;  
     const {params} = this.props.navigation.state;  
     if(this.uploadImage())
     {
-      var UserID=1;
       var moment = require('moment');
       var Tanggal = moment(new Date()).format("YYYY-MM-DD HH:mm:ss");
-      var query = "INSERT INTO easyliving.tbeasyrent (UserID, Tanggal, NamaBarang, KategoriID, Deskripsi, Harga, Waktu, MinWaktu, MaxWaktu, Gambar) VALUES ('"+UserID+"', '"+Tanggal+"', '"+params.NamaBarang+"', '"+params.Kategori+"', '"+params.Deskripsi+"', '"+params.TarifSewa+"', '"+params.SatuanWaktu+"', '"+params.MinWaktu+"', '"+params.MaxWaktu+"', '"+params.ImgFilename1+"');"
-      if(updateTable(query)){Alert.alert('Sucess','Iklan berhasil dipasang')}else{Alert.alert('Error','Iklan gagal dipasang')}
-    }
+      if(params.ID==0){
+        var query = 'INSERT INTO easyliving.tbeasyrent (UserID, Tanggal, NamaBarang, KategoriID, Deskripsi, Harga, SatuanWaktu, MinWaktu, MaxWaktu, Gambar, NoContact) VALUES ('+params.UserID+', "'+Tanggal+'", "'+params.NamaBarang+'", '+params.KategoriID+', "'+params.Deskripsi+'", '+params.Harga+', "'+params.SatuanWaktu+'", '+params.MinWaktu+', '+params.MaxWaktu+', "'+params.ImgFilename1+'", "'+params.NoContact+'");';
+        updateTable(query, this.onUpdateResult)
+        this.props.navigation.state.params.onGoBack('from confirm');
+        this.props.navigation.navigate("EasyRent");
+      } else {
+        if(params.ImgFilename1!=''){
+          var query = 'UPDATE easyliving.tbeasyrent SET UserID='+params.UserID+', Tanggal="'+Tanggal+'", NamaBarang="'+params.NamaBarang+'", KategoriID='+params.KategoriID+', Deskripsi="'+params.Deskripsi+'", Harga='+params.Harga+', SatuanWaktu="'+params.SatuanWaktu+'", MinWaktu='+params.MinWaktu+', MaxWaktu='+params.MaxWaktu+', Gambar="'+params.ImgFilename1+'", NoContact="'+params.NoContact+'" WHERE ID='+params.ID;;
+        } else {
+          var query = 'UPDATE easyliving.tbeasyrent SET UserID='+params.UserID+', Tanggal="'+Tanggal+'", NamaBarang="'+params.NamaBarang+'", KategoriID='+params.KategoriID+', Deskripsi="'+params.Deskripsi+'", Harga='+params.Harga+', SatuanWaktu="'+params.SatuanWaktu+'", MinWaktu='+params.MinWaktu+', MaxWaktu='+params.MaxWaktu+', NoContact="'+params.NoContact+'" WHERE ID='+params.ID;;
+        }  
+        updateTable(query, this.onUpdateResult);
+        if(this.props.navigation.state.params.onGoBack!=undefined){
+          this.props.navigation.state.params.onGoBack('from confirm');
+        }
+        this.props.navigation.navigate("EasyRent");
+      }
+      }
       else
     {
       alert('Upload gambar gagal')
@@ -58,7 +78,7 @@ export default class EasyRentPasangConfirmScreen extends React.Component {
     var UserID=1;
     var moment = require('moment');
     var Tanggal = moment(new Date()).format("YYYY-MM-DD HH:mm:ss");
-    var vQuery = "INSERT INTO easyliving.tbeasyrent (UserID, Tanggal, NamaBarang, KategoriID, Deskripsi, Harga, Waktu, MinWaktu, MaxWaktu, Gambar) VALUES ('"+UserID+"', '"+Tanggal+"', '"+params.NamaBarang+"', '"+params.Kategori+"', '"+params.Deskripsi+"', '"+params.TarifSewa+"', '"+params.SatuanWaktu+"', '"+params.MinWaktu+"', '"+params.MaxWaktu+"', '"+params.ImgFilename1+"');"
+    var vQuery = "INSERT INTO easyliving.tbeasyrent (UserID, Tanggal, NamaBarang, KategoriID, Deskripsi, Harga, SatuanWaktu, MinWaktu, MaxWaktu, Gambar) VALUES ('"+UserID+"', '"+Tanggal+"', '"+params.NamaBarang+"', '"+params.KategoriID+"', '"+params.Deskripsi+"', '"+params.Harga+"', '"+params.SatuanWaktu+"', '"+params.MinWaktu+"', '"+params.MaxWaktu+"', '"+params.ImgFilename1+"');"
     this.uploadImage();
     return fetch('http://mwn.improva.id:8084/gpsloc/reactnative/API.php', {
       method: 'POST',
@@ -83,6 +103,7 @@ export default class EasyRentPasangConfirmScreen extends React.Component {
       alert('Error'); 
     });
   }
+ 
   
   uploadImage = async() => {
     console.log('upload');
@@ -109,6 +130,7 @@ export default class EasyRentPasangConfirmScreen extends React.Component {
     });
   }  
 
+
   drawRow=()=>{
     const {params} = this.props.navigation.state;  
     if(params.MinWaktu>1){minWaktuSewa=', min:'+params.MinWaktu+' '+params.SatuanWaktu} else {minWaktuSewa=''};
@@ -122,11 +144,11 @@ export default class EasyRentPasangConfirmScreen extends React.Component {
           <Text  style={{color:'gray', textAlign:'left', textAlignVertical:'bottom', fontSize:16, fontWeight:'bold', backgroundColor: 'transparent'}}>
               {params.NamaBarang}
           </Text>
-          <Text  style={{color:'#b0b0b0', marginTop:10, marginBottom:10, textAlign:'left', textAlignVertical:'center', fontSize:14, fontWeight:'normal', backgroundColor: 'transparent'}}>
+          <Text numberOfLines={2} style={{color:'#b0b0b0', marginTop:10, marginBottom:10, textAlign:'left', textAlignVertical:'center', fontSize:14, fontWeight:'normal', backgroundColor: 'transparent'}}>
             {params.Deskripsi}
           </Text>
           <Text style={{color:'darkmagenta', textAlign:'left', textAlignVertical:'center', fontSize:14, fontWeight:'normal', backgroundColor: 'transparent'}}>
-            {'Rp. '+params.TarifSewa+' per'+params.SatuanWaktu+minWaktuSewa+maxWaktuSewa}
+            {'Rp. '+params.Harga+' per'+params.SatuanWaktu+minWaktuSewa+maxWaktuSewa}
           </Text>
         </View>
       </View>   
@@ -146,7 +168,7 @@ export default class EasyRentPasangConfirmScreen extends React.Component {
         <View style={{flex:1, width:lebar, paddingTop:40, marginBottom:10, backgroundColor:'white'}}>    
         <View style={{height:60}}></View>
             <View style={{flexDirection:'row', justifyContent:'center'}}>
-              <Button buttonStyle={{height:40, width:100, backgroundColor:'mediumseagreen'}}
+              <Button buttonStyle={{height:50, width:lebar-20, backgroundColor:'mediumseagreen'}}
                 raised
                 onPress={this.confirmPasang}
                 title="Confirm"
